@@ -1,0 +1,58 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background-color: #09090b;
+    color: #f4f4f5;
+}
+
+.spa-section {
+    display: none;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.spa-section.active {
+    display: block;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #09090b;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #3b82f6;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #2563eb;
+}
+
+.glow-card:hover {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+    border-color: #3b82f6;
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}
+
+select option {
+    background-color: #121214;
+    color: #f4f4f5;
+}
+
+summary::-webkit-details-marker {
+    display: none;
+}
+
+summary {
+    list-style: none;
+}
+
+summary:focus {
+    outline: none;
+}
