@@ -1,38 +1,63 @@
+/* Configuración Base */
 html, body {
     height: 100%;
     margin: 0;
-    overflow: hidden;
+    padding: 0;
     background-color: #09090b;
     color: #f4f4f5;
+    overflow: hidden; /* Evita scroll doble en el body */
 }
 
+/* Sistema de SPA y Scroll */
 .spa-section {
     display: none;
-    height: 100%;
-    overflow-y: auto;
+    width: 100%;
+    /* Permitir que el contenido respire */
+    padding-bottom: 5rem !important; 
 }
 
 .spa-section.active {
     display: block;
+    animation: fadeIn 0.3s ease-in-out;
 }
 
-::-webkit-scrollbar {
-    width: 8px;
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-::-webkit-scrollbar-track {
-    background: #09090b;
+/* Contenedor principal de scroll */
+#content-area {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
 }
 
-::-webkit-scrollbar-thumb {
+/* Scrollbar Personalizada */
+#content-area::-webkit-scrollbar,
+nav::-webkit-scrollbar {
+    width: 6px;
+}
+
+#content-area::-webkit-scrollbar-track,
+nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#content-area::-webkit-scrollbar-thumb,
+nav::-webkit-scrollbar-thumb {
+    background: #27272a;
+    border-radius: 10px;
+}
+
+#content-area::-webkit-scrollbar-thumb:hover,
+nav::-webkit-scrollbar-thumb:hover {
     background: #3b82f6;
-    border-radius: 4px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background: #2563eb;
-}
-
+/* Efectos Visuales */
 .glow-card:hover {
     box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
     border-color: #3b82f6;
@@ -40,19 +65,49 @@ html, body {
     transition: all 0.3s ease;
 }
 
+/* Fixes para Inputs y Selects */
 select option {
     background-color: #121214;
     color: #f4f4f5;
 }
 
+/* Ajustes de Details/Summary */
 summary::-webkit-details-marker {
     display: none;
 }
-
 summary {
     list-style: none;
 }
-
 summary:focus {
     outline: none;
+}
+
+/* Mobile First Responsive Fixes */
+@media (max-width: 768px) {
+    .spa-section {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        padding-top: 1.5rem !important;
+        padding-bottom: 6rem !important; /* Más espacio para el final en móviles */
+    }
+
+    #sidebar {
+        height: 100vh;
+        height: -webkit-fill-available;
+    }
+
+    /* Asegurar que las grids no se desborden */
+    .grid {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+/* Evitar que elementos fixed bloqueen eventos */
+#sidebar-overlay {
+    pointer-events: auto;
+}
+
+#sidebar-overlay.hidden {
+    pointer-events: none;
 }
