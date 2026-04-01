@@ -141,7 +141,7 @@ function renderSimulacros() {
             <div class="p-6 flex-1 flex flex-col justify-between">
                 <p class="text-textMuted text-sm mb-6">${item.desc}</p>
                 <div class="space-y-3">
-                    <a href="https://drive.google.com/file/d/1JTaCYX0AiHZgfTB3m7AfUrvA4rEg60vE/view?usp=drive_link" target="_blank" class="w-full bg-sidebar hover:bg-gray-800 text-textLight py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 border border-cardBorder">
+                    <a href="https://drive.google.com/file/d/1Iw76dFUGo03jRDnLtFOhHKA0RyIVeNMH/view?usp=drive_link" target="_blank" class="w-full bg-sidebar hover:bg-gray-800 text-textLight py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 border border-cardBorder">
                         <i class="fa-regular fa-file-pdf ${item.iconClass} text-lg"></i> Ver Cuadernillo
                     </a>
                     <a href="https://forms.gle/QEMNrdzht5tbVKrq6" target="_blank" class="w-full ${item.btnClass} text-white py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2">
