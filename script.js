@@ -60,11 +60,61 @@ function navigate(sectionId) {
 }
 
 const simulacrosData = [
-    { titulo: "Inglés", preguntas: 55, tagClass: "bg-purple-500/10 text-purple-400", borderHover: "hover:border-purple-500", btnClass: "bg-purple-600 hover:bg-purple-700 shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.5)]", iconClass: "text-purple-400", desc: "Siete partes que evalúan desde avisos y diálogos cotidianos hasta gramática y lectura inferencial" },
-    { titulo: "Matemáticas", preguntas: 22, tagClass: "bg-red-500/10 text-red-400", borderHover: "hover:border-red-500", btnClass: "bg-red-600 hover:bg-red-700 shadow-[0_0_15px_rgba(239,68,68,0.3)] hover:shadow-[0_0_25px_rgba(239,68,68,0.5)]", iconClass: "text-red-400", desc: "Evaluación de razonamiento cuantitativo y resolución de problemas mediante geometría, estadística y cálculo aplicado" },
-    { titulo: "Lectura Crítica", preguntas: 41, tagClass: "bg-orange-500/10 text-orange-500", borderHover: "hover:border-orange-500", btnClass: "bg-orange-500 hover:bg-orange-600 shadow-[0_0_15px_rgba(249,115,22,0.3)] hover:shadow-[0_0_25px_rgba(249,115,22,0.5)]", iconClass: "text-orange-400", desc: "Análisis y evaluación de diversos tipos de textos mediante la interpretación de sentidos, intenciones y posturas" },
-    { titulo: "Sociales", preguntas: 25, tagClass: "bg-blue-500/10 text-blue-500", borderHover: "hover:border-blue-500", btnClass: "bg-accent hover:bg-accentHover shadow-[0_0_10px_rgba(59,130,246,0.2)]", iconClass: "text-blue-400", desc: "Análisis de contextos históricos, geográficos y políticos, enfatizando la comprensión de derechos y deberes ciudadanos." },
-    { titulo: "Ciencias Naturales", preguntas: 30, tagClass: "bg-emerald-500/20 text-emerald-400", borderHover: "hover:border-emerald-500", btnClass: "bg-emerald-600 hover:bg-emerald-700 shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.5)]", iconClass: "text-green-400", desc: "Comprensión de fenómenos biológicos, químicos y físicos, junto con el análisis de la investigación científica." }
+    { 
+        titulo: "Inglés", 
+        preguntas: 30, 
+        tagClass: "bg-purple-500/10 text-purple-400", 
+        borderHover: "hover:border-purple-500", 
+        btnClass: "bg-purple-600 hover:bg-purple-700 shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.5)]", 
+        iconClass: "text-purple-400", 
+        desc: "Siete partes que evalúan desde avisos y diálogos cotidianos hasta gramática y lectura inferencial",
+        linkCuadernillo: "https://drive.google.com/file/d/1mjoz2lMTj-vZu4XP37D9HuGy1MPDcndy/view?usp=sharing",
+        linkFormulario: "https://forms.gle/oRnbY9JZzB8b1ke69"
+    },
+    { 
+        titulo: "Matemáticas", 
+        preguntas: 25, 
+        tagClass: "bg-red-500/10 text-red-400", 
+        borderHover: "hover:border-red-500", 
+        btnClass: "bg-red-600 hover:bg-red-700 shadow-[0_0_15px_rgba(239,68,68,0.3)] hover:shadow-[0_0_25px_rgba(239,68,68,0.5)]", 
+        iconClass: "text-red-400", 
+        desc: "Evaluación de razonamiento cuantitativo y resolución de problemas mediante geometría, estadística y cálculo aplicado",
+        linkCuadernillo: "https://drive.google.com/file/d/1y62qqRcMhh724mPvjVe555bvJys8acfm/view?usp=drive_link",
+        linkFormulario: "https://forms.gle/8D67XoCWM7Km2LHZ8"
+    },
+    { 
+        titulo: "Lectura Crítica", 
+        preguntas: 25, 
+        tagClass: "bg-orange-500/10 text-orange-500", 
+        borderHover: "hover:border-orange-500", 
+        btnClass: "bg-orange-500 hover:bg-orange-600 shadow-[0_0_15px_rgba(249,115,22,0.3)] hover:shadow-[0_0_25px_rgba(249,115,22,0.5)]", 
+        iconClass: "text-orange-400", 
+        desc: "Análisis y evaluación de diversos tipos de textos mediante la interpretación de sentidos, intenciones y posturas",
+        linkCuadernillo: "https://drive.google.com/file/d/100LpXbFntTZn8WTzrzsEdJqybUdu0G0b/view?usp=sharing",
+        linkFormulario: "AQUI_TU_LINK_DE_FORMS_LECTURA"
+    },
+    { 
+        titulo: "Sociales", 
+        preguntas: 25, 
+        tagClass: "bg-blue-500/10 text-blue-500", 
+        borderHover: "hover:border-blue-500", 
+        btnClass: "bg-accent hover:bg-accentHover shadow-[0_0_10px_rgba(59,130,246,0.2)]", 
+        iconClass: "text-blue-400", 
+        desc: "Análisis de contextos históricos, geográficos y políticos, enfatizando la comprensión de derechos y deberes ciudadanos.",
+        linkCuadernillo: "https://drive.google.com/file/d/130ODrXb93wkg7tXX5pPiddZO3MuRmwuX/view?usp=drive_link",
+        linkFormulario: "AQUI_TU_LINK_DE_FORMS_SOCIALES"
+    },
+    { 
+        titulo: "Ciencias Naturales", 
+        preguntas: 25, 
+        tagClass: "bg-emerald-500/20 text-emerald-400", 
+        borderHover: "hover:border-emerald-500", 
+        btnClass: "bg-emerald-600 hover:bg-emerald-700 shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.5)]", 
+        iconClass: "text-green-400", 
+        desc: "Comprensión de fenómenos biológicos, químicos y físicos, junto con el análisis de la investigación científica.",
+        linkCuadernillo: "https://drive.google.com/file/d/1WODHoGHCl-QyM3tUVOdQoVvr1U6tV7h7/view?usp=drive_link",
+        linkFormulario: "AQUI_TU_LINK_DE_FORMS_NATURALES"
+    }
 ];
 
 const clasesData = [
@@ -141,10 +191,10 @@ function renderSimulacros() {
             <div class="p-6 flex-1 flex flex-col justify-between">
                 <p class="text-textMuted text-sm mb-6">${item.desc}</p>
                 <div class="space-y-3">
-                    <a href="https://drive.google.com/file/d/1Iw76dFUGo03jRDnLtFOhHKA0RyIVeNMH/view?usp=drive_link" target="_blank" class="w-full bg-sidebar hover:bg-gray-800 text-textLight py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 border border-cardBorder">
+                    <a href="${item.linkCuadernillo}" target="_blank" class="w-full bg-sidebar hover:bg-gray-800 text-textLight py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 border border-cardBorder">
                         <i class="fa-regular fa-file-pdf ${item.iconClass} text-lg"></i> Ver Cuadernillo
                     </a>
-                    <a href="https://forms.gle/QEMNrdzht5tbVKrq6" target="_blank" class="w-full ${item.btnClass} text-white py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2">
+                    <a href="${item.linkFormulario}" target="_blank" class="w-full ${item.btnClass} text-white py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2">
                         <i class="fa-solid fa-list-check text-lg"></i> Subir Respuestas
                     </a>
                 </div>
@@ -152,6 +202,7 @@ function renderSimulacros() {
         </div>
     `).join('');
 }
+
 
 function renderClases() {
     const container = document.getElementById('clases-container');
