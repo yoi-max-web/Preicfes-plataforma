@@ -179,7 +179,7 @@ function setupContactForm() {
     if(!form) return;
     
     const endpoints = {
-        'ingles': 'https://formspree.io/f/endpoint_ingles',
+        'ingles': 'https://formspree.io/f/xykbbjka',
         'matematicas': 'https://formspree.io/f/endpoint_matematicas',
         'lectura': 'https://formspree.io/f/endpoint_lectura',
         'sociales': 'https://formspree.io/f/endpoint_sociales',
