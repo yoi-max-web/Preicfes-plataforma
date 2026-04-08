@@ -3,8 +3,8 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    background-color: #09090b;
-    color: #f4f4f5;
+    background-color: #050a05; /* El mismo bgDark que pusimos arriba */
+    color: #f0fdf4;
     overflow: hidden; /* Evita scroll doble en el body */
 }
 
@@ -18,12 +18,6 @@ html, body {
 
 .spa-section.active {
     display: block;
-    animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
 }
 
 /* Contenedor principal de scroll */
@@ -48,19 +42,19 @@ nav::-webkit-scrollbar-track {
 
 #content-area::-webkit-scrollbar-thumb,
 nav::-webkit-scrollbar-thumb {
-    background: #27272a;
+    background: #1a2e1a; /* Bordes verdes */
     border-radius: 10px;
 }
 
 #content-area::-webkit-scrollbar-thumb:hover,
 nav::-webkit-scrollbar-thumb:hover {
-    background: #3b82f6;
+    background: #10b981; /* Tu nuevo color accent (Esmeralda) */
 }
 
 /* Efectos Visuales */
 .glow-card:hover {
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
-    border-color: #3b82f6;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.15); /* Sombra verde */
+    border-color: #10b981;
     transform: translateY(-2px);
     transition: all 0.3s ease;
 }
@@ -110,4 +104,39 @@ summary:focus {
 
 #sidebar-overlay.hidden {
     pointer-events: none;
+}
+
+
+/* ========================================= */
+/* SISTEMA DE CARPETAS INTERACTIVAS (JS + CSS Grid) */
+/* ========================================= */
+
+.folder-content-wrapper {
+    display: grid;
+    /* Arranca cerrado */
+    grid-template-rows: 0fr; 
+    transition: grid-template-rows 0.4s ease-in-out;
+}
+
+.folder-content-wrapper.open {
+    /* Se abre de forma nativa calculando el contenido interior */
+    grid-template-rows: 1fr;
+}
+
+.folder-content-inner {
+    overflow: hidden;
+}
+
+/* Rotar flecha al activar */
+.folder-toggle.active .chevron {
+    transform: rotate(180deg);
+}
+
+/* Cambiar el ícono de carpeta cerrada a abierta */
+.folder-toggle.active .icon-closed {
+    display: none;
+}
+
+.folder-toggle.active .icon-open {
+    display: block;
 }
