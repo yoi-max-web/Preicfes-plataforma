@@ -66,10 +66,8 @@ const simulacrosCompletosData = [
 ];
 
 const clasesData = [
-    { titulo: "Ciencias Naturales", horario: "10:00AM-12:00PM | Pepito Pérez", emoji: "🧬", colorText: "text-green-500", colorBg: "bg-green-500/10", colorBorder: "border-green-500/20", borderHover: "hover:border-green-500", btnClass: "bg-green-500 hover:bg-green-600 shadow-[0_0_10px_rgba(34,197,94,0.3)]" },
-    { titulo: "Inglés", horario: "8:00 AM - 10:00 AM | Yoimar Serrano", emoji: "🗽", colorText: "text-purple-600", colorBg: "bg-purple-500/10", colorBorder: "border-purple-500/20", borderHover: "hover:border-purple-500", btnClass: "bg-purple-600 hover:bg-purple-700 shadow-[0_0_10px_rgba(147,51,234,0.3)]" },
-    { titulo: "Matemáticas", horario: "6:00AM-8:00AM | Firulais Chupamecha", emoji: "📐", colorText: "text-red-500", colorBg: "bg-red-500/10", colorBorder: "border-red-500/20", borderHover: "hover:border-red-500", btnClass: "bg-red-600 hover:bg-red-700 shadow-[0_0_10px_rgba(220,38,38,0.3)]" },
-    { titulo: "Sociales y Ciudadanas", horario: "3:00 PM - 6:00 PM | Daniela Montoya", emoji: "🌎", colorText: "text-accent", colorBg: "bg-blue-500/10", colorBorder: "border-blue-500/20", borderHover: "hover:border-accent", btnClass: "bg-accent hover:bg-accentHover shadow-[0_0_10px_rgba(59,130,246,0.3)]" },
+    { titulo: "Ciencias Naturales & Sociales", horario: "3:00PM-5:00PM | Ángel Sepúlveda", emoji: "🧬", colorText: "text-green-500", colorBg: "bg-green-500/10", colorBorder: "border-green-500/20", borderHover: "hover:border-green-500", btnClass: "bg-green-500 hover:bg-green-600 shadow-[0_0_10px_rgba(34,197,94,0.3)]" },
+    { titulo: "Inglés & Matemáticas", horario: "10:00AM-12:00AM | Yoimar Serrano", emoji: "🗽", colorText: "text-purple-600", colorBg: "bg-purple-500/10", colorBorder: "border-purple-500/20", borderHover: "hover:border-purple-500", btnClass: "bg-purple-600 hover:bg-purple-700 shadow-[0_0_10px_rgba(147,51,234,0.3)]" },
     { titulo: "Lectura Crítica", horario: "12:00 PM - 03:00 PM | Maria José", emoji: "📚", colorText: "text-orange-500", colorBg: "bg-orange-500/10", colorBorder: "border-orange-500/20", borderHover: "hover:border-orange-500", btnClass: "bg-orange-500 hover:bg-orange-600 shadow-[0_0_10px_rgba(249,115,22,0.3)]" }
 ];
 
@@ -80,10 +78,8 @@ const grabacionesDataIngles = [{ num: "01", titulo: "Avisos y Señales", desc: "
 const grabacionesDataSociales = [{ num: "01", titulo: "Constitución Política", desc: "Derechos y deberes." }, { num: "02", titulo: "Mecanismos de Participación", desc: "Democracia activa." }, { num: "03", titulo: "Historia de Colombia I", desc: "Siglo XIX y XX." }, { num: "04", titulo: "Conflicto Armado", desc: "Orígenes y consecuencias." }, { num: "05", titulo: "Geografía Económica", desc: "Recursos y población." }, { num: "06", titulo: "Modelos Políticos", desc: "Conceptos globales." }];
 
 const tutoresData = [
-    { nombre: "Yoimar Serrano", materia: "Inglés", desc: "Especialista en bilingüismo y comprensión lectora en segunda lengua.", img: "https://ui-avatars.com/api/?name=Yoimar+Serrano&background=9333ea&color=fff", borderHover: "hover:border-purple-500", badgeBg: "bg-purple-500/10", badgeBorder: "border-purple-500/30", badgeText: "text-purple-400", gradient: "from-purple-500/10" },
-    { nombre: "Pepito Pérez", materia: "Ciencias Naturales", desc: "Apasionado por la biología y la investigación científica aplicada.", img: "https://ui-avatars.com/api/?name=Pepito+Perez&background=10b981&color=fff", borderHover: "hover:border-emerald-500", badgeBg: "bg-emerald-500/10", badgeBorder: "border-emerald-500/30", badgeText: "text-emerald-400", gradient: "from-emerald-500/10" },
-    { nombre: "Firulais Chupamecha", materia: "Matemáticas", desc: "Experto en razonamiento cuantitativo y lógica matemática.", img: "https://ui-avatars.com/api/?name=Firulais+Chupamecha&background=ef4444&color=fff", borderHover: "hover:border-red-500", badgeBg: "bg-red-500/10", badgeBorder: "border-red-500/30", badgeText: "text-red-400", gradient: "from-red-500/10" },
-    { nombre: "Daniela Montoya", materia: "Sociales y Ciudadanas", desc: "Analista de contextos históricos y ciencias políticas.", img: "https://ui-avatars.com/api/?name=Daniela+Montoya&background=3b82f6&color=fff", borderHover: "hover:border-blue-500", badgeBg: "bg-blue-500/10", badgeBorder: "border-blue-500/30", badgeText: "text-blue-400", gradient: "from-blue-500/10" },
+    { nombre: "Yoimar Serrano", materia: "Inglés & Matemáticas", desc: "Hola, soy Yoimar. Mi meta es estudiar idiomas y quiero que dominemos juntos las matemáticas y el inglés. Si estás en 10° o 11°, unamos fuerzas para fortalecer esas áreas y asegurar un excelente resultado en el ICFES.", img: "https://ui-avatars.com/api/?name=Yoimar+Serrano&background=9333ea&color=fff", borderHover: "hover:border-purple-500", badgeBg: "bg-purple-500/10", badgeBorder: "border-purple-500/30", badgeText: "text-purple-400", gradient: "from-purple-500/10" },
+    { nombre: "Ángel Sepúlveda", materia: "Ciencias Naturales & Sociales", desc: "Hola, soy Ángel. Como aspirante a medicina, quiero apoyar a jóvenes de 10° y 11° en biología, física, química y CTS para que juntos logremos un buen ICFES.", img: "/imgs/Angel.jpeg", borderHover: "hover:border-emerald-500", badgeBg: "bg-emerald-500/10", badgeBorder: "border-emerald-500/30", badgeText: "text-emerald-400", gradient: "from-emerald-500/10" },
     { nombre: "Maria José", materia: "Lectura Crítica", desc: "Lingüista enfocada en análisis de textos y hermenéutica.", img: "https://ui-avatars.com/api/?name=Maria+Jose&background=f97316&color=fff", borderHover: "hover:border-orange-500", badgeBg: "bg-orange-500/10", badgeBorder: "border-orange-500/30", badgeText: "text-orange-400", gradient: "from-orange-500/10" }
 ];
 
@@ -210,10 +206,8 @@ function setupContactForm() {
     
     const endpoints = {
         'ingles': 'https://formspree.io/f/xykbbjka',
-        'matematicas': 'https://formspree.io/f/endpoint_matematicas',
         'lectura': 'https://formspree.io/f/endpoint_lectura',
-        'sociales': 'https://formspree.io/f/endpoint_sociales',
-        'naturales': 'https://formspree.io/f/endpoint_naturales'
+        'naturales': 'https://formspree.io/f/mrerbdgz'
     };
 
     form.addEventListener('submit', function(e) {
