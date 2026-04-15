@@ -66,9 +66,9 @@ const simulacrosCompletosData = [
 ];
 
 const clasesData = [
-    { titulo: "Ciencias Naturales & Sociales", horario: "3:00PM-5:00PM | Ángel Sepúlveda", emoji: "🧬", colorText: "text-green-500", colorBg: "bg-green-500/10", colorBorder: "border-green-500/20", borderHover: "hover:border-green-500", btnClass: "bg-green-500 hover:bg-green-600 shadow-[0_0_10px_rgba(34,197,94,0.3)]" },
-    { titulo: "Inglés & Matemáticas", horario: "10:00AM-12:00AM | Yoimar Serrano", emoji: "🗽", colorText: "text-purple-600", colorBg: "bg-purple-500/10", colorBorder: "border-purple-500/20", borderHover: "hover:border-purple-500", btnClass: "bg-purple-600 hover:bg-purple-700 shadow-[0_0_10px_rgba(147,51,234,0.3)]" },
-    { titulo: "Lectura Crítica", horario: "12:00 PM - 03:00 PM | Maria José", emoji: "📚", colorText: "text-orange-500", colorBg: "bg-orange-500/10", colorBorder: "border-orange-500/20", borderHover: "hover:border-orange-500", btnClass: "bg-orange-500 hover:bg-orange-600 shadow-[0_0_10px_rgba(249,115,22,0.3)]" }
+    { titulo: "Ciencias Naturales & Sociales", horario: "3:00PM-5:00PM | Ángel Sepúlveda", emoji: "🧬", colorText: "text-green-500", colorBg: "bg-green-500/10", colorBorder: "border-green-500/20", borderHover: "hover:border-green-500", btnClass: "bg-green-500 hover:bg-green-600 shadow-[0_0_10px_rgba(34,197,94,0.3)]", link: "https://meet.google.com/wwh-uuih-qrs" },
+    { titulo: "Inglés & Matemáticas", horario: "10:00AM-12:00AM | Yoimar Serrano", emoji: "🗽", colorText: "text-purple-600", colorBg: "bg-purple-500/10", colorBorder: "border-purple-500/20", borderHover: "hover:border-purple-500", btnClass: "bg-purple-600 hover:bg-purple-700 shadow-[0_0_10px_rgba(147,51,234,0.3)]", link: "https://meet.google.com/crf-qfxc-wmi" },
+    { titulo: "Lectura Crítica", horario: "12:00 PM - 03:00 PM | Maria José", emoji: "📚", colorText: "text-orange-500", colorBg: "bg-orange-500/10", colorBorder: "border-orange-500/20", borderHover: "hover:border-orange-500", btnClass: "bg-orange-500 hover:bg-orange-600 shadow-[0_0_10px_rgba(249,115,22,0.3)]", link: "https://meet.google.com/wys-kwhx-fnv" }
 ];
 
 const grabacionesDataLectura = [{ num: "01", titulo: "Tipologías Textuales", desc: "Niveles de lectura inicial." }, { num: "02", titulo: "Textos Continuos", desc: "Análisis de columnas." }, { num: "03", titulo: "Textos Discontinuos", desc: "Infografías y tablas." }, { num: "04", titulo: "Argumentación", desc: "Tesis y premisas." }, { num: "05", titulo: "Inferencia", desc: "Lectura profunda." }, { num: "06", titulo: "Evaluación Crítica", desc: "Posturas del autor." }];
@@ -148,9 +148,9 @@ function renderClases() {
                     <p class="text-textMuted text-xs md:text-sm mt-1"><i class="fa-regular fa-clock mr-1"></i> ${item.horario}</p>
                 </div>
             </div>
-            <button class="w-full md:w-auto ${item.btnClass} text-white px-6 py-2.5 rounded-lg font-medium transition whitespace-nowrap">
+            <a href="${item.link}" target="_blank" class="w-full md:w-auto ${item.btnClass} text-white px-6 py-2.5 rounded-lg font-medium transition whitespace-nowrap text-center inline-block">
                 Unirse a Meet
-            </button>
+            </a>
         </div>
     `).join('');
 }
