@@ -50,6 +50,7 @@ const sectionTitles = {
     'simulacro': 'Biblioteca de Simulacros',
     'clases': 'Tutorías y Clases en Vivo',
     'grabaciones': 'Archivo de Grabaciones',
+    'ranking': 'Ranking Saber 11',
     'tutores': 'Nuestro Equipo de Tutores',
     'contacto': 'Contacto'
 };
@@ -351,26 +352,70 @@ document.addEventListener('DOMContentLoaded', () => {
     setupFolders(); 
 });
 
-// ESCUCHADOR DE SESIÓN (Registro único con merge: true)
+// =========================================================================
+// SOLUCIÓN: CONTADOR REAL-TIME SINCRONIZADO CON EL ESTADO DE AUTH
+// =========================================================================
+
+// Variable global para guardar la suscripción y evitar memory leaks
+let unsubscribeCounter = null;
+
+// Función dedicada a arrancar el listener
+const startCounterListener = () => {
+    // Si ya existe un listener activo, lo matamos antes de crear uno nuevo
+    if (unsubscribeCounter) {
+        unsubscribeCounter();
+    }
+
+    const usuariosRef = collection(db, "usuarios");
+    
+    unsubscribeCounter = onSnapshot(usuariosRef, (snapshot) => {
+        const count = snapshot.size;
+        const el = document.getElementById("inscritos-count");
+        if (el) {
+            el.textContent = count;
+            console.log("Contador actualizado:", count);
+        }
+    }, (error) => {
+        console.error("Error en Snapshot del contador:", error);
+    });
+};
+
+// Función para detener el listener al cerrar sesión
+const stopCounterListener = () => {
+    if (unsubscribeCounter) {
+        unsubscribeCounter(); // Detiene la escucha en Firebase
+        unsubscribeCounter = null;
+    }
+    // Opcional: Resetear la UI para el próximo usuario
+    const el = document.getElementById("inscritos-count");
+    if (el) el.textContent = "...";
+};
+
+// ESCUCHADOR DE SESIÓN
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         if (user.email && user.email.endsWith("@gmail.com")) {
             console.log("Sesión activa válida detectada:", user.email);
             
             try {
+                // Primero actualizamos los datos del usuario
                 await setDoc(doc(db, 'usuarios', user.uid), {
                     nombre: user.displayName || "Usuario sin nombre",
                     email: user.email,
-                    fechaRegistro: new Date().toISOString()
+                    fechaRegistro: user.metadata?.creationTime || new Date().toISOString()
                 }, { merge: true });
-                console.log("Usuario registrado/actualizado en Firestore exitosamente.");
+                
+                unlockApp();
+                
+                // INICIAMOS EL CONTADOR AQUÍ (Ya tenemos token de Auth válido)
+                startCounterListener();
+
             } catch (error) {
                 console.error("Error al registrar usuario en Firestore:", error);
             }
-
-            unlockApp();
         } else {
             console.log("Correo no válido, cerrando sesión preventiva.");
+            stopCounterListener(); // Detenemos el listener por seguridad
             await signOut(auth); 
             lockApp();
             
@@ -379,34 +424,9 @@ onAuthStateChanged(auth, async (user) => {
             }
         }
     } else {
+        stopCounterListener(); // Limpiamos el listener si no hay sesión
         lockApp();
     }
     
     isInitialAuthCheck = false;
-});
-
-// =========================================================================
-// SOLUCIÓN DEFINITIVA: CONTADOR FORZADO EN TIEMPO REAL
-// =========================================================================
-
-// Función para actualizar el texto con reintento (Búsqueda dinámica)
-const updateUI = (valor) => {
-    const el = document.getElementById("inscritos-count");
-    if (el) {
-        el.textContent = valor;
-        console.log("DOM actualizado con éxito:", valor);
-    } else {
-        console.warn("Reintentando encontrar el ID 'inscritos-count'...");
-        // Si no lo encuentra, espera 100ms y reintenta (por si el HTML es lento o se oculta)
-        setTimeout(() => updateUI(valor), 100);
-    }
-};
-
-// Escucha permanente al final del archivo
-onSnapshot(collection(db, "usuarios"), (snapshot) => {
-    const count = snapshot.size;
-    console.log("Firebase envió nuevo dato:", count);
-    updateUI(count);
-}, (error) => {
-    console.error("Error en Snapshot:", error);
 });
