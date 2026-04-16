@@ -349,8 +349,68 @@ document.addEventListener('DOMContentLoaded', () => {
     renderTutores();
     setupContactForm();
     setupEventListeners();
-    setupFolders(); 
+    setupFolders();
+    createResultsChart();
 });
+
+function createResultsChart() {
+    const canvas = document.getElementById('graficaResultados');
+    if (!canvas) return;
+
+    new Chart(canvas, {
+        type: 'radar',
+        data: {
+            labels: ['Matemáticas', 'Lectura Crítica', 'Ciencias Naturales', 'Sociales', 'Inglés'],
+            datasets: [{
+                label: 'Desempeño',
+                data: [72, 80, 68, 75, 85],
+                borderColor: '#22c55e',
+                backgroundColor: 'rgba(16, 185, 129, 0.22)',
+                pointBackgroundColor: '#22c55e',
+                pointBorderColor: '#a7f3d0',
+                pointHoverBackgroundColor: '#a7f3d0',
+                pointHoverBorderColor: '#16a34a',
+                borderWidth: 2,
+                fill: true,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    grid: {
+                        color: 'rgba(34, 197, 94, 0.25)'
+                    },
+                    angleLines: {
+                        color: 'rgba(34, 197, 94, 0.35)'
+                    },
+                    pointLabels: {
+                        color: '#cbd5e1',
+                        font: {
+                            size: 12
+                        }
+                    },
+                    suggestedMin: 0,
+                    suggestedMax: 100,
+                    ticks: {
+                        display: false
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: '#0f172a',
+                    titleColor: '#f8fafc',
+                    bodyColor: '#d1fae5'
+                }
+            }
+        }
+    });
+}
 
 // =========================================================================
 // SOLUCIÓN: CONTADOR REAL-TIME SINCRONIZADO CON EL ESTADO DE AUTH
@@ -429,4 +489,64 @@ onAuthStateChanged(auth, async (user) => {
     }
     
     isInitialAuthCheck = false;
+});
+// =========================================================================
+// LÓGICA DEL MODAL DE VALIDACIÓN DE RESULTADOS
+// =========================================================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    const btnAbrirValidacion = document.getElementById('btn-abrir-validacion');
+    const btnCerrarModal = document.getElementById('btn-cerrar-modal');
+    const modalValidacion = document.getElementById('modal-validacion');
+    const checkboxTerminos = document.getElementById('acepto-terminos');
+    const btnDescargarPdf = document.getElementById('btn-descargar-pdf');
+
+    // 1. Función para abrir el modal
+    function abrirModal() {
+        if (modalValidacion) {
+            modalValidacion.classList.remove('hidden');
+            // Pequeño timeout para animar la opacidad si fuera necesario
+            setTimeout(() => {
+                modalValidacion.classList.add('opacity-100');
+            }, 10);
+        }
+    }
+
+    // 2. Función para cerrar el modal
+    function cerrarModal() {
+        if (modalValidacion) {
+            modalValidacion.classList.add('hidden');
+            // Opcional: limpiar los campos al cerrar
+            document.getElementById('val-email').value = '';
+            document.getElementById('val-documento').value = '';
+            checkboxTerminos.checked = false;
+            btnDescargarPdf.disabled = true;
+        }
+    }
+
+    // 3. Listeners de apertura y cierre
+    if (btnAbrirValidacion) {
+        btnAbrirValidacion.addEventListener('click', abrirModal);
+    }
+
+    if (btnCerrarModal) {
+        btnCerrarModal.addEventListener('click', cerrarModal);
+    }
+
+    // Cerrar el modal al hacer clic fuera de la tarjeta (en el fondo negro)
+    if (modalValidacion) {
+        modalValidacion.addEventListener('click', (e) => {
+            if (e.target === modalValidacion) {
+                cerrarModal();
+            }
+        });
+    }
+
+    // 4. Lógica del Checkbox para habilitar/deshabilitar el botón
+    if (checkboxTerminos && btnDescargarPdf) {
+        checkboxTerminos.addEventListener('change', (e) => {
+            // Si está marcado, quitamos el 'disabled', si no, lo ponemos
+            btnDescargarPdf.disabled = !e.target.checked;
+        });
+    }
 });

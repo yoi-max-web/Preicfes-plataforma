@@ -65,6 +65,20 @@ select option {
     color: #f4f4f5;
 }
 
+/* Ranking oscuro y responsive */
+.bg-ranking-card {
+    background: linear-gradient(180deg, #082c19 0%, #09361f 100%);
+    border-color: rgba(16, 185, 129, 0.2);
+}
+
+#ranking .ranking-table-wrapper {
+    overflow-x: auto;
+}
+
+#ranking table {
+    min-width: 560px;
+}
+
 /* Ajustes de Details/Summary */
 summary::-webkit-details-marker {
     display: none;
