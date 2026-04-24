@@ -1,7 +1,43 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-import { getFirestore, collection, onSnapshot, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+import { auth, provider, db } from "./firebase-config.js";
+import { signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+import { collection, onSnapshot, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
+window.validarYDescargar = async function() {
+    const documento = document.getElementById('input-id-modal')?.value.trim();
+    const grado = document.getElementById('input-grado-modal')?.value.trim().toUpperCase();
+
+    if (!documento || !grado) {
+        alert('Por favor ingresa tu número de documento y tu grado.');
+        return;
+    }
+
+    try {
+        const resultadoRef = doc(db, 'resultados_simulacro', documento);
+        const resultadoSnap = await getDoc(resultadoRef);
+
+        if (!resultadoSnap.exists()) {
+            alert('No se encontró un resultado con ese número de documento.');
+            return;
+        }
+
+        const resultadoData = resultadoSnap.data();
+        const gradoFirestore = resultadoData?.grado?.toString().trim().toUpperCase();
+
+        if (gradoFirestore !== grado) {
+            alert('El grado ingresado no coincide con el registro.');
+            return;
+        }
+
+        alert('Validación correcta. Ahora puedes descargar tus resultados.');
+        // TODO: aquí puedes llamar a la función que genera el PDF.
+    } catch (error) {
+        console.error('Error al validar el resultado:', error);
+        alert('Ocurrió un error al validar. Intenta de nuevo más tarde.');
+    }
+};
+
+// Variables globales de estado
+let isInitialAuthCheck = true; 
 // Configuración de Tailwind
 if (typeof tailwind !== 'undefined') {
     tailwind.config = {
@@ -26,23 +62,6 @@ if (typeof tailwind !== 'undefined') {
     };
 }
 
-// Inicialización de Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyCxQK1xwBqKOjwq9YKI0-vqJrvF-lwPeV0",
-    authDomain: "pre-icfes-saber-11-mpb.firebaseapp.com",
-    projectId: "pre-icfes-saber-11-mpb",
-    storageBucket: "pre-icfes-saber-11-mpb.firebasestorage.app",
-    messagingSenderId: "1032568451031",
-    appId: "1:1032568451031:web:ff572fdee598fb1041a592"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
-const db = getFirestore(app);
-
-// Variables globales de estado
-let isInitialAuthCheck = true; 
 
 // Lógica de UI - Datos y Renderizado
 const sectionTitles = {
@@ -312,12 +331,24 @@ function setupEventListeners() {
 function unlockApp() {
     const authScreen = document.getElementById('auth-screen');
     const appContainer = document.getElementById('app-container');
-    
-    if (authScreen) authScreen.classList.add('hidden');
-    if (appContainer) {
-        appContainer.classList.remove('hidden');
-        appContainer.classList.add('flex');
+    const btnLogin = document.getElementById('btn-login');
+
+    if (!authScreen || !appContainer) {
+        document.addEventListener('DOMContentLoaded', unlockApp);
+        return;
     }
+
+    authScreen.classList.add('hidden');
+    appContainer.classList.remove('hidden');
+    appContainer.classList.add('flex');
+
+    if(btnLogin && btnLogin.hasAttribute('data-original-html')) {
+        btnLogin.innerHTML = btnLogin.getAttribute('data-original-html');
+        btnLogin.disabled = false;
+        btnLogin.classList.remove('opacity-70', 'cursor-not-allowed');
+    }
+
+    navigate('dashboard');
 }
 
 function lockApp() {
@@ -333,6 +364,8 @@ function lockApp() {
         authScreen.classList.remove('hidden');
     }
     
+    stopCounterListener();
+
     if(btnLogin && btnLogin.hasAttribute('data-original-html')) {
         btnLogin.innerHTML = btnLogin.getAttribute('data-original-html');
         btnLogin.disabled = false;
@@ -457,19 +490,16 @@ onAuthStateChanged(auth, async (user) => {
         if (user.email && user.email.endsWith("@gmail.com")) {
             console.log("Sesión activa válida detectada:", user.email);
             
+            unlockApp();
+            startCounterListener();
+            
             try {
-                // Primero actualizamos los datos del usuario
+                // Actualizamos los datos del usuario en Firestore, pero no bloqueamos el acceso si falla
                 await setDoc(doc(db, 'usuarios', user.uid), {
                     nombre: user.displayName || "Usuario sin nombre",
                     email: user.email,
                     fechaRegistro: user.metadata?.creationTime || new Date().toISOString()
                 }, { merge: true });
-                
-                unlockApp();
-                
-                // INICIAMOS EL CONTADOR AQUÍ (Ya tenemos token de Auth válido)
-                startCounterListener();
-
             } catch (error) {
                 console.error("Error al registrar usuario en Firestore:", error);
             }
@@ -498,6 +528,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnAbrirValidacion = document.getElementById('btn-abrir-validacion');
     const btnCerrarModal = document.getElementById('btn-cerrar-modal');
     const modalValidacion = document.getElementById('modal-validacion');
+    const valDocumento = document.getElementById('input-id-modal');
+    const valGrado = document.getElementById('input-grado-modal');
     const checkboxTerminos = document.getElementById('acepto-terminos');
     const btnDescargarPdf = document.getElementById('btn-descargar-pdf');
 
@@ -517,8 +549,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (modalValidacion) {
             modalValidacion.classList.add('hidden');
             // Opcional: limpiar los campos al cerrar
-            document.getElementById('val-email').value = '';
-            document.getElementById('val-documento').value = '';
+            if (valDocumento) valDocumento.value = '';
+            if (valGrado) valGrado.value = '';
             checkboxTerminos.checked = false;
             btnDescargarPdf.disabled = true;
         }
@@ -545,8 +577,129 @@ document.addEventListener('DOMContentLoaded', () => {
     // 4. Lógica del Checkbox para habilitar/deshabilitar el botón
     if (checkboxTerminos && btnDescargarPdf) {
         checkboxTerminos.addEventListener('change', (e) => {
-            // Si está marcado, quitamos el 'disabled', si no, lo ponemos
             btnDescargarPdf.disabled = !e.target.checked;
         });
     }
 });
+
+const temasMateria = {
+    'ingles': {
+        titulo: 'Inglés',
+        icono: 'fa-brain',
+        colorTexto: 'text-purple-500',
+        colorBorde: 'border-purple-500/30',
+        colorSombra: 'rgba(168,85,247,0.3)',
+        temas: [
+            'Avisos y diálogos cotidianos',
+            'Comprensión literal de textos',
+            'Vocabulario en contexto',
+            'Gramática básica e intermedia',
+            'Lectura inferencial'
+        ]
+    },
+    'naturales': {
+        titulo: 'Ciencias Naturales',
+        icono: 'fa-seedling',
+        colorTexto: 'text-emerald-500',
+        colorBorde: 'border-emerald-500/30',
+        colorSombra: 'rgba(16,185,129,0.3)',
+        temas: [
+            'Método científico e investigación',
+            'Mecánica clásica y termodinámica',
+            'Estequiometría y enlaces químicos',
+            'Genética y evolución',
+            'Ecología y medio ambiente'
+        ]
+    },
+    'matematicas': {
+        titulo: 'Matemáticas',
+        icono: 'fa-superscript',
+        colorTexto: 'text-red-500',
+        colorBorde: 'border-red-500/30',
+        colorSombra: 'rgba(239,68,68,0.3)',
+        temas: [
+            'Aritmética y proporcionalidad',
+            'Álgebra y cálculo de funciones',
+            'Geometría plana y espacial',
+            'Estadística descriptiva',
+            'Probabilidad'
+        ]
+    },
+    'lectura': {
+        titulo: 'Lectura Crítica',
+        icono: 'fa-book',
+        colorTexto: 'text-orange-500',
+        colorBorde: 'border-orange-500/30',
+        colorSombra: 'rgba(249,115,22,0.3)',
+        temas: [
+            'Identificación de tipologías textuales',
+            'Hermenéutica y análisis de argumentos',
+            'Coherencia y cohesión local',
+            'Figuras literarias',
+            'Intención comunicativa del autor'
+        ]
+    },
+    'sociales': {
+        titulo: 'Sociales y Ciudadanas',
+        icono: 'fa-earth-americas',
+        colorTexto: 'text-blue-500',
+        colorBorde: 'border-blue-500/30',
+        colorSombra: 'rgba(59,130,246,0.3)',
+        temas: [
+            'Constitución Política de Colombia',
+            'Derechos fundamentales y deberes',
+            'Historia mundial y nacional (S. XX y XXI)',
+            'Mecanismos de participación',
+            'Geografía económica y política'
+        ]
+    }
+};
+
+window.abrirModalTemas = function(materiaKey) {
+    const data = temasMateria[materiaKey];
+    if (!data) return;
+
+    const modal = document.getElementById('modal-temas');
+    const modalContent = document.getElementById('modal-temas-content');
+    const titulo = document.getElementById('modal-titulo');
+    const icono = document.getElementById('modal-icono');
+    const iconContainer = document.getElementById('modal-icon-container');
+    const listaTemas = document.getElementById('modal-lista-temas');
+
+    titulo.textContent = data.titulo;
+    
+    icono.className = `fa-solid ${data.icono} ${data.colorTexto}`;
+    iconContainer.className = `w-14 h-14 rounded-full flex items-center justify-center bg-sidebar border ${data.colorBorde}`;
+    modalContent.style.boxShadow = `0 0 40px ${data.colorSombra}`;
+    modalContent.style.borderColor = data.colorBorde.replace('border-', '').replace('/30', '');
+
+    listaTemas.innerHTML = data.temas.map(tema => `
+        <li class="bg-sidebar p-3 rounded-xl border border-cardBorder flex items-center gap-3">
+            <i class="fa-solid fa-check text-accent text-sm"></i>
+            <span class="text-slate-200 text-sm font-medium">${tema}</span>
+        </li>
+    `).join('');
+
+    modal.classList.remove('hidden');
+    
+    setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        modalContent.classList.remove('scale-95');
+        modalContent.classList.add('scale-100');
+    }, 10);
+};
+
+window.cerrarModalTemas = function(event) {
+    if (event && event.target.id !== 'modal-temas' && event.type === 'click') return;
+    
+    const modal = document.getElementById('modal-temas');
+    const modalContent = document.getElementById('modal-temas-content');
+
+    modal.classList.add('opacity-0');
+    modalContent.classList.remove('scale-100');
+    modalContent.classList.add('scale-95');
+
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 300);
+};

@@ -1,0 +1,24 @@
+{
+  "name": "pre-icfes-virtual",
+  "version": "1.0.0",
+  "description": "[View Live Project](https://preicfes-plataforma.vercel.app/)",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yoi-max-web/Preicfes-plataforma.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/yoi-max-web/Preicfes-plataforma/issues"
+  },
+  "homepage": "https://github.com/yoi-max-web/Preicfes-plataforma#readme",
+  "dependencies": {
+    "firebase-admin": "^13.8.0"
+  }
+}

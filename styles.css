@@ -154,3 +154,11 @@ summary:focus {
 .folder-toggle.active .icon-open {
     display: block;
 }
+
+#contenedor-pdf-oculto {
+    background-image: url('./Plantilla.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 816px; /* Medida estándar carta a 96dpi */
+    height: 1056px;
+}
