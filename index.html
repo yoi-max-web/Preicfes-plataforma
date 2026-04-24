@@ -8,6 +8,34 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
+    
+    <style>
+        /* Estilos de Scrollbar Personalizada para modo oscuro */
+        #content-area::-webkit-scrollbar,
+        #modal-scroll-area::-webkit-scrollbar,
+        nav::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #content-area::-webkit-scrollbar-track,
+        #modal-scroll-area::-webkit-scrollbar-track,
+        nav::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        #content-area::-webkit-scrollbar-thumb,
+        #modal-scroll-area::-webkit-scrollbar-thumb,
+        nav::-webkit-scrollbar-thumb {
+            background: #1a2e1a; /* Verde muy oscuro por defecto */
+            border-radius: 10px;
+        }
+
+        #content-area::-webkit-scrollbar-thumb:hover,
+        #modal-scroll-area::-webkit-scrollbar-thumb:hover,
+        nav::-webkit-scrollbar-thumb:hover {
+            background: #10b981; /* Verde esmeralda al hacer hover */
+        }
+    </style>
 </head>
 <body class="bg-bgDark font-sans text-textLight h-screen overflow-hidden">
     
@@ -83,17 +111,17 @@
                     </button>
                 </div>
                 <div class="px-6 py-4 mt-auto border-t border-white/5">
-    <div class="flex items-center space-x-3 opacity-80 hover:opacity-100 transition-opacity">
-        <div class="relative flex h-2 w-2">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500/50"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-        </div>
-        
-        <p class="text-slate-400 text-xs tracking-wide uppercase font-semibold">
-            <span id="inscritos-count" class="text-white text-sm font-bold">...</span> Estudiantes Registrados
-        </p>
-    </div>
-</div>
+                    <div class="flex items-center space-x-3 opacity-80 hover:opacity-100 transition-opacity">
+                        <div class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500/50"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                        </div>
+                        
+                        <p class="text-slate-400 text-xs tracking-wide uppercase font-semibold">
+                            <span id="inscritos-count" class="text-white text-sm font-bold">...</span> Estudiantes Registrados
+                        </p>
+                    </div>
+                </div>
                 
                 <div class="mt-auto pt-4 border-t border-cardBorder">
                     <button id="btn-logout" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-red-500/10 text-red-500 font-medium">
@@ -107,7 +135,7 @@
             </div>
         </aside>
 
-        <main class="flex-1 flex flex-col min-w-0 bg-bgDark relative h-full">
+        <main class="flex-1 flex flex-col min-w-0 min-h-0 bg-bgDark relative h-full">
             <header class="h-16 bg-cardDark border-b border-cardBorder flex items-center justify-between px-4 md:px-8 z-30 shrink-0">
                 <div class="flex items-center gap-4">
                     <button id="btn-sidebar-open" class="md:hidden text-textMuted hover:text-accent focus:outline-none">
@@ -117,7 +145,7 @@
                 </div>
             </header>
 
-            <div id="content-area" class="flex-1 overflow-y-auto overflow-x-hidden scrolling-touch">
+            <div id="content-area" class="flex-1 overflow-y-auto overflow-x-hidden scrolling-touch min-h-0">
                 
                 <section id="dashboard" class="spa-section active p-4 md:p-8">
                     <div class="max-w-5xl mx-auto bg-cardDark rounded-2xl p-6 md:p-10 border border-cardBorder glow-card mb-8">
@@ -129,35 +157,36 @@
                              Plataforma de apoyo extracurricular para estudiantes de la I.E. Misael Pastrana Borrero. Preparamos tu éxito en la prueba Saber 11º todos los sábados.
                         </p>
                         <p class="text-base md:text-lg text-textMuted leading-relaxed mb-8">
-                            <strong>¿Qué es el ICFES?</strong> Es la entidad estatal que estandariza y aplica las pruebas de Estado para regular el acceso y medir la calidad de la educación superior en Colombia.
+                            <strong>¿Qué es el ICFES?</strong> Es la entidad estatal que estandariza y aplica las pruebas de Estado para regular el acceso y medir la calidad de la educación media en Colombia.
                         </p>
                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-8">
-    <div onclick="abrirModalTemas('ingles')" class="bg-sidebar p-6 rounded-2xl border border-cardBorder hover:border-purple-600 hover:scale-[1.02] transition-all duration-300 cursor-pointer">
-        <i class="fa-solid fa-brain text-purple-500 text-3xl mb-4 drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]"></i>
-        <h4 class="font-bold text-white mb-1">Inglés</h4>
-        <p class="text-sm text-textMuted">Evalúa y potencia la competencia comunicativa en lengua extranjera, desde vocabulario esencial hasta lectura compleja.</p>
-    </div>
-    <div onclick="abrirModalTemas('naturales')" class="bg-sidebar p-6 rounded-2xl border border-cardBorder hover:border-emerald-500 hover:scale-[1.02] transition-all duration-300 cursor-pointer">
-        <i class="fa-solid fa-seedling text-emerald-500 text-3xl mb-4 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]"></i>
-        <h4 class="font-bold text-white mb-1">Ciencias Naturales</h4>
-        <p class="text-sm text-textMuted">Integra conceptos de biología, física y química para explicar fenómenos naturales y procesos de indagación científica.</p>
-    </div>
-    <div onclick="abrirModalTemas('matematicas')" class="bg-sidebar p-6 rounded-2xl border border-cardBorder hover:border-red-500 hover:scale-[1.02] transition-all duration-300 cursor-pointer">
-        <i class="fa-solid fa-superscript text-red-500 text-3xl mb-4 drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]"></i>
-        <h4 class="font-bold text-white mb-1">Matemáticas</h4>
-        <p class="text-sm text-textMuted">Fortalece el razonamiento cuantitativo y la resolución de problemas aplicados a contextos reales y científicos.</p>
-    </div>
-    <div onclick="abrirModalTemas('lectura')" class="bg-sidebar p-6 rounded-2xl border border-cardBorder hover:border-orange-500 hover:scale-[1.02] transition-all duration-300 cursor-pointer">
-        <i class="fa-solid fa-book text-orange-500 text-3xl mb-4 drop-shadow-[0_0_8px_rgba(249,115,22,0.5)]"></i>
-        <h4 class="font-bold text-white mb-1">Lectura Crítica</h4>
-        <p class="text-sm text-textMuted">Desarrolla la capacidad de analizar, interpretar y evaluar textos de diversos géneros con pensamiento crítico.</p>
-    </div>
-    <div onclick="abrirModalTemas('sociales')" class="bg-sidebar p-6 rounded-2xl border border-cardBorder hover:border-blue-500 hover:scale-[1.02] transition-all duration-300 cursor-pointer">
-        <i class="fa-solid fa-earth-americas text-blue-500 text-3xl mb-4 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]"></i>
-        <h4 class="font-bold text-white mb-1">Sociales y Ciudadanas</h4>
-        <p class="text-sm text-textMuted">Analiza el entorno histórico, geográfico y político, fomentando la comprensión de los derechos y la ciudadanía.</p>
-    </div>
-</div>
+                            <div onclick="abrirModalTemas('ingles')" class="bg-sidebar p-6 rounded-2xl border border-cardBorder hover:border-purple-600 hover:scale-[1.02] transition-all duration-300 cursor-pointer">
+                                <i class="fa-solid fa-brain text-purple-500 text-3xl mb-4 drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]"></i>
+                                <h4 class="font-bold text-white mb-1">Inglés</h4>
+                                <p class="text-sm text-textMuted">Evalúa y potencia la competencia comunicativa en lengua extranjera, desde vocabulario esencial hasta lectura compleja.</p>
+                            </div>
+                            <div onclick="abrirModalTemas('naturales')" class="bg-sidebar p-6 rounded-2xl border border-cardBorder hover:border-emerald-500 hover:scale-[1.02] transition-all duration-300 cursor-pointer">
+                                <i class="fa-solid fa-seedling text-emerald-500 text-3xl mb-4 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]"></i>
+                                <h4 class="font-bold text-white mb-1">Ciencias Naturales</h4>
+                                <p class="text-sm text-textMuted">Integra conceptos de biología, física y química para explicar fenómenos naturales y procesos de indagación científica.</p>
+                            </div>
+                            <div onclick="abrirModalTemas('matematicas')" class="bg-sidebar p-6 rounded-2xl border border-cardBorder hover:border-red-500 hover:scale-[1.02] transition-all duration-300 cursor-pointer">
+                                <i class="fa-solid fa-superscript text-red-500 text-3xl mb-4 drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]"></i>
+                                <h4 class="font-bold text-white mb-1">Matemáticas</h4>
+                                <p class="text-sm text-textMuted">Fortalece el razonamiento cuantitativo y la resolución de problemas aplicados a contextos reales y científicos.</p>
+                            </div>
+                            <div onclick="abrirModalTemas('lectura')" class="bg-sidebar p-6 rounded-2xl border border-cardBorder hover:border-orange-500 hover:scale-[1.02] transition-all duration-300 cursor-pointer">
+                                <i class="fa-solid fa-book text-orange-500 text-3xl mb-4 drop-shadow-[0_0_8px_rgba(249,115,22,0.5)]"></i>
+                                <h4 class="font-bold text-white mb-1">Lectura Crítica</h4>
+                                <p class="text-sm text-textMuted">Desarrolla la capacidad de analizar, interpretar y evaluar textos de diversos géneros con pensamiento crítico.</p>
+                            </div>
+                            <div onclick="abrirModalTemas('sociales')" class="bg-sidebar p-6 rounded-2xl border border-cardBorder hover:border-blue-500 hover:scale-[1.02] transition-all duration-300 cursor-pointer">
+                                <i class="fa-solid fa-earth-americas text-blue-500 text-3xl mb-4 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]"></i>
+                                <h4 class="font-bold text-white mb-1">Sociales y Ciudadanas</h4>
+                                <p class="text-sm text-textMuted">Analiza el entorno histórico, geográfico y político, fomentando la comprensión de los derechos y la ciudadanía.</p>
+                            </div>
+                        </div>
+                    </div>
                 </section>
 
                 <section id="simulacro" class="spa-section p-4 md:p-8">
@@ -335,41 +364,40 @@
                     </div>
                 </section>
 
-<section id="ranking" class="spa-section p-4 md:p-8">
-    <div class="max-w-6xl mx-auto bg-[#081c15] rounded-3xl border border-emerald-900/50 p-6 md:p-10 mb-8 shadow-2xl relative overflow-hidden">
-        
-        <div class="text-center mb-10 relative z-10">
-            <h3 class="text-3xl md:text-4xl font-extrabold text-white mb-4">Ranking Saber 11</h3>
-            <p class="text-emerald-100/70 text-lg">Consulta los mejores puntajes y valida tus resultados detallados.</p>
-        </div>
+                <section id="ranking" class="spa-section p-4 md:p-8">
+                    <div class="max-w-6xl mx-auto bg-[#081c15] rounded-3xl border border-emerald-900/50 p-6 md:p-10 mb-8 shadow-2xl relative overflow-hidden">
+                        
+                        <div class="text-center mb-10 relative z-10">
+                            <h3 class="text-3xl md:text-4xl font-extrabold text-white mb-4">Ranking Saber 11</h3>
+                            <p class="text-emerald-100/70 text-lg">Consulta los mejores puntajes y valida tus resultados detallados.</p>
+                        </div>
 
-        <div class="bg-black/80 border border-emerald-900/30 rounded-2xl overflow-hidden mb-10 ranking-table-wrapper relative z-10">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-emerald-950/30 text-emerald-200/70 text-sm uppercase tracking-wider">
-                            <th class="p-4 font-semibold">Puesto</th>
-                            <th class="p-4 font-semibold">Estudiante</th>
-                            <th class="p-4 font-semibold text-center">Puntaje Global</th>
-                            <th class="p-4 font-semibold text-right">Grado</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ranking-body" class="text-slate-200 divide-y divide-emerald-900/20">
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                        <div class="bg-black/80 border border-emerald-900/30 rounded-2xl overflow-hidden mb-10 ranking-table-wrapper relative z-10">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="bg-emerald-950/30 text-emerald-200/70 text-sm uppercase tracking-wider">
+                                            <th class="p-4 font-semibold">Puesto</th>
+                                            <th class="p-4 font-semibold">Estudiante</th>
+                                            <th class="p-4 font-semibold text-center">Puntaje Global</th>
+                                            <th class="p-4 font-semibold text-right">Grado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ranking-body" class="text-slate-200 divide-y divide-emerald-900/20">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
 
-        <div class="text-center relative z-10">
-            <button id="btn-abrir-validacion" class="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(16,185,129,0.4)]">
-                <i class="fa-solid fa-id-card mr-2"></i> Validar Mis Resultados
-            </button>
-        </div>
-        
-<div id="resultados-personales" class="hidden mt-12 pt-10 border-t border-emerald-900/30"></div>
-            </div>
-    </div>
-</section>
+                        <div class="text-center relative z-10">
+                            <button id="btn-abrir-validacion" class="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(16,185,129,0.4)]">
+                                <i class="fa-solid fa-id-card mr-2"></i> Validar Mis Resultados
+                            </button>
+                        </div>
+                        
+                        <div id="resultados-personales" class="hidden mt-12 pt-10 border-t border-emerald-900/30"></div>
+                    </div>
+                </section>
 
                 <section id="tutores" class="spa-section p-4 md:p-8">
                     <div class="max-w-6xl mx-auto mb-12">
@@ -415,80 +443,73 @@
             </div>
         </main>
     </div> 
+    
     <script type="module" src="script.js"></script>
     <script type="module" src="main.js"></script>
     
-<div id="modal-validacion" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity duration-300 hidden">
-
-    <div class="bg-cardDark border border-emerald-800/50 rounded-[24px] p-4 sm:p-6 md:p-8 lg:p-10 max-w-[400px] w-[95%] sm:w-[90%] shadow-[0_0_40px_rgba(16,185,129,0.15)] flex flex-col items-center text-center relative mx-4">
-
-        <button id="btn-cerrar-modal" class="absolute top-3 right-3 sm:top-4 sm:right-4 text-slate-500 hover:text-white transition-colors">
-            <i class="fa-solid fa-xmark text-lg sm:text-xl"></i>
-        </button>
-
-        <div class="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 mx-auto mb-4 sm:mb-6 rounded-full border-2 border-emerald-500 p-1 shadow-[0_0_15px_rgba(16,185,129,0.4)]">
-            <img src="imgs/logo.png" alt="Logo MPB" class="w-full h-full rounded-full object-cover">
-        </div>
-
-        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-wider flex items-center gap-1 mb-2">
-            SABER<span class="text-white">11</span><span class="text-red-500 text-2xl sm:text-3xl leading-none">°</span>
-        </h2>
-        <p class="text-slate-400 text-xs sm:text-sm mb-6 sm:mb-8 px-2">
-            Ingresa tus datos para validar y descargar tus resultados oficiales.
-        </p>
-
-        <div class="w-full flex flex-col gap-3 sm:gap-4">
-
-            <div class="relative">
-                <i class="fa-solid fa-id-badge absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-emerald-400 text-sm sm:text-base"></i>
-                <input type="text" id="input-id-modal" placeholder="Número de documento (ID)"
-                       class="w-full bg-emerald-950/30 border border-emerald-700 text-white rounded-xl py-2.5 sm:py-3 pl-9 sm:pl-11 pr-4 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all placeholder-slate-500 text-sm sm:text-base">
-            </div>
-
-            <div class="relative">
-                <i class="fa-solid fa-graduation-cap absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-emerald-400 text-sm sm:text-base"></i>
-                <input type="text" id="input-grado-modal" placeholder="Grado (ej. 11A)"
-                       maxlength="4"
-                       class="w-full bg-emerald-950/30 border border-emerald-700 text-white rounded-xl py-2.5 sm:py-3 pl-9 sm:pl-11 pr-4 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all placeholder-slate-500 text-sm sm:text-base">
-            </div>
-
-            <div class="flex items-start gap-3 mt-2 text-left bg-slate-800/30 p-3 rounded-lg border border-slate-800">
-                <input type="checkbox" id="acepto-terminos"
-                       class="mt-1 shrink-0 w-4 h-4 accent-emerald-500 rounded border-slate-700 bg-slate-950 cursor-pointer">
-                <label for="acepto-terminos" class="text-[10px] sm:text-[11px] text-slate-400 leading-snug cursor-pointer select-none">
-                    Acepto los términos y condiciones de tratamiento de datos personales de la I.E. Misael Pastrana Borrero.
-                </label>
-            </div>
-
-            <button id="btn-descargar-pdf" onclick="validarYDescargar()" disabled
-                    class="w-full mt-3 sm:mt-4 bg-white text-black font-extrabold tracking-wide py-2.5 sm:py-3.5 px-4 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-emerald-500 hover:text-white hover:shadow-[0_0_20px_rgba(16,185,129,0.5)] flex items-center justify-center gap-2 text-sm sm:text-base">
-                <i class="fa-solid fa-download"></i> DESCARGAR MIS RESULTADOS
+    <div id="modal-validacion" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity duration-300 hidden">
+        <div class="bg-cardDark border border-emerald-800/50 rounded-[24px] p-4 sm:p-6 md:p-8 lg:p-10 max-w-[400px] w-[95%] sm:w-[90%] shadow-[0_0_40px_rgba(16,185,129,0.15)] flex flex-col items-center text-center relative mx-4">
+            <button id="btn-cerrar-modal" class="absolute top-3 right-3 sm:top-4 sm:right-4 text-slate-500 hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark text-lg sm:text-xl"></i>
             </button>
+            <div class="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 mx-auto mb-4 sm:mb-6 rounded-full border-2 border-emerald-500 p-1 shadow-[0_0_15px_rgba(16,185,129,0.4)]">
+                <img src="imgs/logo.png" alt="Logo MPB" class="w-full h-full rounded-full object-cover">
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold tracking-wider flex items-center gap-1 mb-2">
+                SABER<span class="text-white">11</span><span class="text-red-500 text-2xl sm:text-3xl leading-none">°</span>
+            </h2>
+            <p class="text-slate-400 text-xs sm:text-sm mb-6 sm:mb-8 px-2">
+                Ingresa tus datos para validar y descargar tus resultados oficiales.
+            </p>
+            <div class="w-full flex flex-col gap-3 sm:gap-4">
+                <div class="relative">
+                    <i class="fa-solid fa-id-badge absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-emerald-400 text-sm sm:text-base"></i>
+                    <input type="text" id="input-id-modal" placeholder="Número de documento (ID)"
+                           class="w-full bg-emerald-950/30 border border-emerald-700 text-white rounded-xl py-2.5 sm:py-3 pl-9 sm:pl-11 pr-4 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all placeholder-slate-500 text-sm sm:text-base">
+                </div>
+                <div class="relative">
+                    <i class="fa-solid fa-graduation-cap absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-emerald-400 text-sm sm:text-base"></i>
+                    <input type="text" id="input-grado-modal" placeholder="Grado (ej. 11A)"
+                           maxlength="4"
+                           class="w-full bg-emerald-950/30 border border-emerald-700 text-white rounded-xl py-2.5 sm:py-3 pl-9 sm:pl-11 pr-4 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all placeholder-slate-500 text-sm sm:text-base">
+                </div>
+                <div class="flex items-start gap-3 mt-2 text-left bg-slate-800/30 p-3 rounded-lg border border-slate-800">
+                    <input type="checkbox" id="acepto-terminos"
+                           class="mt-1 shrink-0 w-4 h-4 accent-emerald-500 rounded border-slate-700 bg-slate-950 cursor-pointer">
+                    <label for="acepto-terminos" class="text-[10px] sm:text-[11px] text-slate-400 leading-snug cursor-pointer select-none">
+                        Acepto los términos y condiciones de tratamiento de datos personales de la I.E. Misael Pastrana Borrero.
+                    </label>
+                </div>
+                <button id="btn-descargar-pdf" onclick="validarYDescargar()" disabled
+                        class="w-full mt-3 sm:mt-4 bg-white text-black font-extrabold tracking-wide py-2.5 sm:py-3.5 px-4 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-emerald-500 hover:text-white hover:shadow-[0_0_20px_rgba(16,185,129,0.5)] flex items-center justify-center gap-2 text-sm sm:text-base">
+                    <i class="fa-solid fa-download"></i> DESCARGAR MIS RESULTADOS
+                </button>
+            </div>
         </div>
     </div>
-</div>
-<div id="modal-temas" class="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-md transition-opacity duration-300 hidden opacity-0" onclick="cerrarModalTemas(event)">
-    <div id="modal-temas-content" class="bg-cardDark border rounded-[24px] p-6 md:p-8 max-w-[500px] w-[90%] shadow-2xl relative transform scale-95 transition-transform duration-300" onclick="event.stopPropagation()">
-        
-        <button onclick="cerrarModalTemas()" class="absolute top-4 right-4 text-textMuted hover:text-white transition-colors">
-            <i class="fa-solid fa-xmark text-2xl"></i>
-        </button>
 
-        <div class="flex items-center gap-4 mb-6 border-b border-cardBorder pb-4">
-            <div id="modal-icon-container" class="w-14 h-14 rounded-full flex items-center justify-center bg-sidebar border border-cardBorder">
-                <i id="modal-icono" class="fa-solid text-2xl"></i>
-            </div>
-            <div>
-                <span class="text-textMuted text-[10px] tracking-widest uppercase font-bold">Temario de estudio</span>
-                <h3 id="modal-titulo" class="text-2xl font-black text-white"></h3>
-            </div>
-        </div>
+    <div id="modal-temas" class="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-md transition-opacity duration-300 hidden opacity-0" onclick="cerrarModalTemas(event)">
+        <div id="modal-temas-content" class="bg-cardDark border rounded-[24px] p-6 md:p-8 max-w-[500px] w-[90%] shadow-2xl relative transform scale-95 transition-transform duration-300" onclick="event.stopPropagation()">
+            
+            <button onclick="cerrarModalTemas()" class="absolute top-4 right-4 text-textMuted hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark text-2xl"></i>
+            </button>
 
-        <div class="max-h-[60vh] overflow-y-auto pr-2" id="content-area">
-            <ul id="modal-lista-temas" class="space-y-3">
-            </ul>
+            <div class="flex items-center gap-4 mb-6 border-b border-cardBorder pb-4">
+                <div id="modal-icon-container" class="w-14 h-14 rounded-full flex items-center justify-center bg-sidebar border border-cardBorder">
+                    <i id="modal-icono" class="fa-solid text-2xl"></i>
+                </div>
+                <div>
+                    <span class="text-textMuted text-[10px] tracking-widest uppercase font-bold">Temario de estudio</span>
+                    <h3 id="modal-titulo" class="text-2xl font-black text-white"></h3>
+                </div>
+            </div>
+
+            <div class="max-h-[60vh] overflow-y-auto pr-2" id="modal-scroll-area">
+                <ul id="modal-lista-temas" class="space-y-3">
+                </ul>
+            </div>
         </div>
     </div>
-</div>
 </body>
 </html>
