@@ -92,12 +92,19 @@ const clasesData = [
     { titulo: "Lectura Crítica", horario: "12:00 PM - 03:00 PM | Maria José", emoji: "📚", colorText: "text-orange-500", colorBg: "bg-orange-500/10", colorBorder: "border-orange-500/20", borderHover: "hover:border-orange-500", btnClass: "bg-orange-500 hover:bg-orange-600 shadow-[0_0_10px_rgba(249,115,22,0.3)]", link: "https://meet.google.com/wys-kwhx-fnv" }
 ];
 
-const grabacionesDataLectura = [{ num: "01", titulo: "Tipologías Textuales", desc: "Niveles de lectura inicial." }];
-const grabacionesDataNaturales = [{ num: "01", titulo: "Método Científico", desc: "Bases de investigación." }];
-const grabacionesDataMatematicas = [{ num: "01", titulo: "Aritmética Básica", desc: "Proporciones y porcentajes." }];
-const grabacionesDataIngles = [{ num: "01", titulo: "Avisos y Señales", desc: "Interpretación visual." }];
-const grabacionesDataSociales = [{ num: "01", titulo: "Constitución Política", desc: "Derechos y deberes." }];
-
+const grabacionesDataLectura = [{ num: "01", titulo: "Tipologías Textuales", desc: "Niveles de lectura inicial.", url: "", desafio: "" }];
+const grabacionesDataNaturales = [{ num: "01", titulo: "Método Científico", desc: "Bases de investigación.", url: "", desafio: "" }];
+const grabacionesDataMatematicas = [{ 
+    num: "01", 
+    titulo: "Análisis de Gráficas", 
+    desc: "Variables dependientes e independientes.", 
+    // Usamos la URL limpia para evitar errores de sintaxis
+    url: "https://www.youtube.com/watch?v=xmpyi87fYAE", 
+   
+    desafio: "DESAFÍO: Encontra un error en la clase. ¿Puedes hallarlo? deja tu cometario" 
+}];
+const grabacionesDataIngles = [{ num: "01", titulo: "Avisos y Señales", desc: "Interpretación visual.", url: "", desafio: "" }];
+const grabacionesDataSociales = [{ num: "01", titulo: "Constitución Política", desc: "Derechos y deberes.", url: "", desafio: "" }];
 const tutoresData = [
     { nombre: "Yoimar Serrano", materia: "Inglés & Matemáticas", desc: "Hola, soy Yoimar. Mi enfoque son los idiomas y quiero que dominemos juntos matemáticas e inglés.", img: "/imgs/Yo.jpg", borderHover: "hover:border-purple-500", badgeBg: "bg-purple-500/10", badgeBorder: "border-purple-500/30", badgeText: "text-purple-400", gradient: "from-purple-500/10" },
     { nombre: "Ángel Sepúlveda", materia: "Ciencias Naturales & Sociales", desc: "Hola, soy Ángel. Como aspirante a medicina, quiero apoyar a jóvenes de 10° y 11° en biología, física, química.", img: "/imgs/Angel.jpeg", borderHover: "hover:border-emerald-500", badgeBg: "bg-emerald-500/10", badgeBorder: "border-emerald-500/30", badgeText: "text-emerald-400", gradient: "from-emerald-500/10" },
@@ -175,26 +182,42 @@ function renderClases() {
         </div>
     `).join('');
 }
-
 function renderGrabacionesList(containerId, data, color) {
     const container = document.getElementById(containerId);
     if(!container) return;
-    container.innerHTML = data.map(item => `
-        <div class="bg-cardDark rounded-2xl border border-cardBorder p-5 flex items-center gap-4 hover:border-${color}-500 transition duration-300">
-            <div class="w-14 h-14 rounded-xl bg-sidebar flex items-center justify-center border border-cardBorder shrink-0">
-                <i class="fa-solid fa-play text-${color}-500 text-xl"></i>
+
+    container.innerHTML = data.map(item => {
+        // Verificamos si hay URL para habilitar o deshabilitar el botón
+        const tieneUrl = item.url && item.url.trim() !== "";
+        const buttonClass = tieneUrl 
+            ? `text-white bg-${color}-600 hover:bg-${color}-700 border-${color}-500` 
+            : `text-textMuted bg-sidebar opacity-20 cursor-not-allowed pointer-events-none border-cardBorder`;
+
+        return `
+            <div class="bg-cardDark rounded-2xl border border-cardBorder p-5 flex items-center gap-4 hover:border-${color}-500/50 transition duration-300">
+                <div class="w-14 h-14 rounded-xl bg-sidebar flex items-center justify-center border border-cardBorder shrink-0">
+                    <i class="fa-solid fa-play text-${color}-500 text-xl ${tieneUrl ? 'animate-pulse' : ''}"></i>
+                </div>
+
+                <div class="flex-1 min-w-0">
+                    <span class="text-[10px] text-${color}-500 font-bold uppercase tracking-wider">Clase ${item.num}</span>
+                    <h4 class="text-white font-semibold text-base leading-tight mt-1 truncate">${item.titulo}</h4>
+                    <p class="text-textMuted text-xs truncate mt-1">${item.desc}</p>
+                    
+                    ${item.desafio ? `<p class="text-${color}-400 text-[10px] mt-2 font-medium italic animate-bounce-subtle">${item.desafio}</p>` : ''}
+                </div>
+
+                <a href="${tieneUrl ? item.url : '#'}" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   class="p-2.5 rounded-full border transition-all duration-300 ${buttonClass}">
+                    <i class="fa-solid fa-arrow-up-right-from-square text-sm"></i>
+                </a>
             </div>
-            <div class="flex-1 min-w-0">
-                <span class="text-[10px] text-${color}-500 font-bold uppercase">Clase ${item.num}</span>
-                <h4 class="text-white font-semibold text-base leading-tight mt-1 truncate">${item.titulo}</h4>
-                <p class="text-textMuted text-xs truncate mt-1">${item.desc}</p>
-            </div>
-            <a href="#" class="text-textMuted hover:text-white bg-sidebar p-2.5 rounded-full border border-cardBorder hover:border-${color}-500 transition">
-                <i class="fa-solid fa-arrow-up-right-from-square text-sm"></i>
-            </a>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
+
 
 function renderGrabaciones() {
     renderGrabacionesList('grabaciones-grid-lectura', grabacionesDataLectura, 'orange');
@@ -227,7 +250,7 @@ function setupContactForm() {
     
     const endpoints = {
         'ingles': 'https://formspree.io/f/xykbbjka',
-        'lectura': 'https://formspree.io/f/endpoint_lectura',
+        'lectura': 'https://formspree.io/f/xykbbjka',
         'naturales': 'https://formspree.io/f/mrerbdgz'
     };
 
