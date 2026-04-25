@@ -703,3 +703,72 @@ window.cerrarModalTemas = function(event) {
         modal.classList.add('hidden');
     }, 300);
 };
+
+// 1. Añadir al objeto sectionTitles existente en tu código:
+// sectionTitles['material'] = 'Material de Estudio';
+
+// 2. Base de datos simulada de archivos (puedes expandirla)
+const datosMaterial = {
+    'ingles': [
+        { nombre: 'Cuadernillo ICFES Inglés 2023', peso: '2.4 MB', url: '#' },
+        { nombre: 'Lista de Verbos Irregulares B1', peso: '850 KB', url: '#' }
+    ],
+    'matematicas': [
+        { nombre: 'Formulario Razonamiento Cuantitativo', peso: '1.2 MB', url: '#' }
+    ],
+    'espanol': [
+        { nombre: 'Guía de Tipologías Textuales', peso: '3.1 MB', url: '#' }
+    ],
+    'sociales': [
+        { nombre: 'Resumen Constitución Política', peso: '1.8 MB', url: '#' }
+    ],
+    'naturales': [
+        { nombre: 'Esquema Método Científico', peso: '900 KB', url: '#' }
+    ]
+};
+
+// 3. Funciones de navegación interna
+window.abrirCarpeta = function(areaId, titulo) {
+    const vistaCarpetas = document.getElementById('vista-carpetas');
+    const vistaArchivos = document.getElementById('vista-archivos');
+    const tituloElement = document.getElementById('titulo-area-material');
+    const contenedorArchivos = document.getElementById('lista-archivos-container');
+
+    // Cambiar título
+    tituloElement.textContent = titulo;
+
+    // Renderizar archivos
+    const archivos = datosMaterial[areaId] || [];
+    if (archivos.length === 0) {
+        contenedorArchivos.innerHTML = `<p class="text-textMuted text-center py-8">No hay archivos disponibles por el momento.</p>`;
+    } else {
+        contenedorArchivos.innerHTML = archivos.map(archivo => `
+            <div class="file-card bg-cardDark border border-cardBorder rounded-xl p-4 flex items-center justify-between transition-all duration-300">
+                <div class="flex items-center gap-4 min-w-0">
+                    <div class="text-red-500 text-3xl shrink-0">
+                        <i class="fa-solid fa-file-pdf drop-shadow-[0_0_8px_rgba(239,68,68,0.4)]"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <h5 class="text-white font-semibold text-sm md:text-base truncate">${archivo.nombre}</h5>
+                        <p class="text-textMuted text-xs font-medium uppercase tracking-wider">${archivo.peso}</p>
+                    </div>
+                </div>
+                <a href="${archivo.url}" target="_blank" class="shrink-0 bg-sidebar border border-cardBorder hover:border-emerald-500 hover:text-emerald-500 text-textLight px-4 py-2 rounded-lg text-sm font-bold transition-colors shadow-sm">
+                    Descargar
+                </a>
+            </div>
+        `).join('');
+    }
+
+    // Intercambiar vistas
+    vistaCarpetas.classList.add('hidden');
+    vistaArchivos.classList.remove('hidden');
+};
+
+window.volverCarpetas = function() {
+    const vistaCarpetas = document.getElementById('vista-carpetas');
+    const vistaArchivos = document.getElementById('vista-archivos');
+
+    vistaArchivos.classList.add('hidden');
+    vistaCarpetas.classList.remove('hidden');
+};

@@ -90,18 +90,18 @@
                     <button id="nav-dashboard" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all bg-accent text-white font-medium shadow-[0_0_15px_rgba(59,130,246,0.3)]">
                         <i class="fa-solid fa-house w-5"></i> Inicio
                     </button>
-                    <button id="nav-simulacro" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-sidebarHover text-textMuted hover:text-white font-medium">
+                    <!-- <button id="nav-simulacro" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-sidebarHover text-textMuted hover:text-white font-medium">
                         <i class="fa-solid fa-file-pen w-5"></i> Práctica
-                    </button>
+                    </button> -->
                     <button id="nav-clases" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-sidebarHover text-textMuted hover:text-white font-medium">
                         <i class="fa-solid fa-video w-5"></i> Link Clases 
                     </button>
                     <button id="nav-grabaciones" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-sidebarHover text-textMuted hover:text-white font-medium">
                         <i class="fa-solid fa-play-circle w-5"></i> Grabaciones
                     </button>
-                    <button id="nav-ranking" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-sidebarHover text-textMuted hover:text-white font-medium">
+                    <!-- <button id="nav-ranking" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-sidebarHover text-textMuted hover:text-white font-medium">
                         <i class="fa-solid fa-ranking-star w-5"></i> Ranking Saber 11
-                    </button>
+                    </button> -->
                     <button id="nav-tutores" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-sidebarHover text-textMuted hover:text-white font-medium">
                         <i class="fa-solid fa-users w-5"></i> Tutores 
                     </button>
@@ -110,6 +110,9 @@
                         <i class="fa-solid fa-envelope w-5"></i> Contáctanos
                     </button>
                 </div>
+                <button id="nav-material" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-sidebarHover text-textMuted hover:text-white font-medium">
+    <i class="fa-solid fa-folder-open w-5"></i> Material
+</button>
                 <div class="px-6 py-4 mt-auto border-t border-white/5">
                     <div class="flex items-center space-x-3 opacity-80 hover:opacity-100 transition-opacity">
                         <div class="relative flex h-2 w-2">
@@ -440,6 +443,73 @@
                         </form>
                     </div>
                 </section>
+                <section id="material" class="spa-section p-4 md:p-8">
+    <div class="max-w-5xl mx-auto mb-12">
+        
+        <div id="vista-carpetas" class="block animate-fade-in">
+            <h3 class="text-3xl font-bold text-white mb-2">Material de Estudio</h3>
+            <p class="text-textMuted mb-8">Selecciona un área para explorar y descargar los documentos disponibles.</p>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <button onclick="abrirCarpeta('ingles', 'Inglés')" class="bg-cardDark border border-cardBorder hover:border-emerald-500 rounded-2xl p-6 text-left transition-all duration-300 hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] hover:-translate-y-1 group">
+                    <div class="w-14 h-14 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-4 border border-emerald-500/30 group-hover:bg-emerald-500/20 transition-colors">
+                        <i class="fa-solid fa-folder-open text-3xl text-emerald-500"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-1">Inglés</h4>
+                    <p class="text-textMuted text-xs font-semibold uppercase tracking-wider"><span class="text-emerald-500">4</span> Archivos</p>
+                </button>
+
+                <button onclick="abrirCarpeta('matematicas', 'Matemáticas')" class="bg-cardDark border border-cardBorder hover:border-blue-500 rounded-2xl p-6 text-left transition-all duration-300 hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] hover:-translate-y-1 group">
+                    <div class="w-14 h-14 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4 border border-blue-500/30 group-hover:bg-blue-500/20 transition-colors">
+                        <i class="fa-solid fa-folder-open text-3xl text-blue-500"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-1">Matemáticas</h4>
+                    <p class="text-textMuted text-xs font-semibold uppercase tracking-wider"><span class="text-blue-500">6</span> Archivos</p>
+                </button>
+
+                <button onclick="abrirCarpeta('espanol', 'Lectura Crítica')" class="bg-cardDark border border-cardBorder hover:border-red-500 rounded-2xl p-6 text-left transition-all duration-300 hover:shadow-[0_0_20px_rgba(239,68,68,0.15)] hover:-translate-y-1 group">
+                    <div class="w-14 h-14 rounded-xl bg-red-500/10 flex items-center justify-center mb-4 border border-red-500/30 group-hover:bg-red-500/20 transition-colors">
+                        <i class="fa-solid fa-folder-open text-3xl text-red-500"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-1">Lectura Crítica</h4>
+                    <p class="text-textMuted text-xs font-semibold uppercase tracking-wider"><span class="text-red-500">3</span> Archivos</p>
+                </button>
+
+                <button onclick="abrirCarpeta('sociales', 'Sociales y Ciudadanas')" class="bg-cardDark border border-cardBorder hover:border-yellow-500 rounded-2xl p-6 text-left transition-all duration-300 hover:shadow-[0_0_20px_rgba(234,179,8,0.15)] hover:-translate-y-1 group">
+                    <div class="w-14 h-14 rounded-xl bg-yellow-500/10 flex items-center justify-center mb-4 border border-yellow-500/30 group-hover:bg-yellow-500/20 transition-colors">
+                        <i class="fa-solid fa-folder-open text-3xl text-yellow-500"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-1">Sociales</h4>
+                    <p class="text-textMuted text-xs font-semibold uppercase tracking-wider"><span class="text-yellow-500">5</span> Archivos</p>
+                </button>
+
+                <button onclick="abrirCarpeta('naturales', 'Ciencias Naturales')" class="bg-cardDark border border-cardBorder hover:border-cyan-500 rounded-2xl p-6 text-left transition-all duration-300 hover:shadow-[0_0_20px_rgba(6,182,212,0.15)] hover:-translate-y-1 group">
+                    <div class="w-14 h-14 rounded-xl bg-cyan-500/10 flex items-center justify-center mb-4 border border-cyan-500/30 group-hover:bg-cyan-500/20 transition-colors">
+                        <i class="fa-solid fa-folder-open text-3xl text-cyan-500"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-1">Ciencias Naturales</h4>
+                    <p class="text-textMuted text-xs font-semibold uppercase tracking-wider"><span class="text-cyan-500">7</span> Archivos</p>
+                </button>
+            </div>
+        </div>
+
+        <div id="vista-archivos" class="hidden animate-fade-in">
+            <div class="flex items-center gap-4 mb-8">
+                <button onclick="volverCarpetas()" class="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white border border-emerald-500/30 flex items-center justify-center transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.2)] shrink-0">
+                    <i class="fa-solid fa-arrow-left text-xl"></i>
+                </button>
+                <div>
+                    <h3 id="titulo-area-material" class="text-2xl md:text-3xl font-bold text-white">Área</h3>
+                    <p class="text-textMuted text-sm">Archivos disponibles para descarga</p>
+                </div>
+            </div>
+
+            <div id="lista-archivos-container" class="space-y-3 overflow-y-auto pr-2 max-h-[60vh] scrollbar-material">
+                </div>
+        </div>
+
+    </div>
+</section>
             </div>
         </main>
     </div> 
