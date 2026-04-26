@@ -89,7 +89,7 @@ const simulacrosCompletosData = [
 const clasesData = [
     { titulo: "Ciencias Naturales & Sociales", horario: "3:00PM-5:00PM | Ángel Sepúlveda", emoji: "🧬", colorText: "text-green-500", colorBg: "bg-green-500/10", colorBorder: "border-green-500/20", borderHover: "hover:border-green-500", btnClass: "bg-green-500 hover:bg-green-600 shadow-[0_0_10px_rgba(34,197,94,0.3)]", link: "https://meet.google.com/wwh-uuih-qrs" },
     { titulo: "Inglés & Matemáticas", horario: "10:00AM-12:00AM | Yoimar Serrano", emoji: "🗽", colorText: "text-purple-600", colorBg: "bg-purple-500/10", colorBorder: "border-purple-500/20", borderHover: "hover:border-purple-500", btnClass: "bg-purple-600 hover:bg-purple-700 shadow-[0_0_10px_rgba(147,51,234,0.3)]", link: "https://meet.google.com/crf-qfxc-wmi" },
-    { titulo: "Lectura Crítica", horario: "12:00 PM - 03:00 PM | Maria José", emoji: "📚", colorText: "text-orange-500", colorBg: "bg-orange-500/10", colorBorder: "border-orange-500/20", borderHover: "hover:border-orange-500", btnClass: "bg-orange-500 hover:bg-orange-600 shadow-[0_0_10px_rgba(249,115,22,0.3)]", link: "https://meet.google.com/wys-kwhx-fnv" }
+    { titulo: "Lectura Crítica", horario: "7:00 PM - 8:30 PM | Daniela", emoji: "📚", colorText: "text-orange-500", colorBg: "bg-orange-500/10", colorBorder: "border-orange-500/20", borderHover: "hover:border-orange-500", btnClass: "bg-orange-500 hover:bg-orange-600 shadow-[0_0_10px_rgba(249,115,22,0.3)]", link: "https://meet.google.com/wys-kwhx-fnv" }
 ];
 
 const grabacionesDataLectura = [{ num: "01", titulo: "Tipologías Textuales", desc: "Niveles de lectura inicial.", url: "", desafio: "" }];
@@ -108,7 +108,7 @@ const grabacionesDataSociales = [{ num: "01", titulo: "Constitución Política",
 const tutoresData = [
     { nombre: "Yoimar Serrano", materia: "Inglés & Matemáticas", desc: "Hola, soy Yoimar. Mi enfoque son los idiomas y quiero que dominemos juntos matemáticas e inglés.", img: "/imgs/Yo.jpg", borderHover: "hover:border-purple-500", badgeBg: "bg-purple-500/10", badgeBorder: "border-purple-500/30", badgeText: "text-purple-400", gradient: "from-purple-500/10" },
     { nombre: "Ángel Sepúlveda", materia: "Ciencias Naturales & Sociales", desc: "Hola, soy Ángel. Como aspirante a medicina, quiero apoyar a jóvenes de 10° y 11° en biología, física, química.", img: "/imgs/Angel.jpeg", borderHover: "hover:border-emerald-500", badgeBg: "bg-emerald-500/10", badgeBorder: "border-emerald-500/30", badgeText: "text-emerald-400", gradient: "from-emerald-500/10" },
-    { nombre: "Maria José", materia: "Lectura Crítica", desc: "Lingüista enfocada en análisis de textos y hermenéutica.", img: "https://ui-avatars.com/api/?name=Maria+Jose&background=f97316&color=fff", borderHover: "hover:border-orange-500", badgeBg: "bg-orange-500/10", badgeBorder: "border-orange-500/30", badgeText: "text-orange-400", gradient: "from-orange-500/10" }
+    { nombre: "Daniela", materia: "Lectura Crítica", desc: "No doy lecciones, doy direcciones a la comprensión.", img: "./imgs/Karen.jpg", borderHover: "hover:border-orange-500", badgeBg: "bg-orange-500/10", badgeBorder: "border-orange-500/30", badgeText: "text-orange-400", gradient: "from-orange-500/10" }
 ];
 
 function renderSimulacros() {
@@ -164,11 +164,14 @@ function renderSimulacrosCompletos() {
 function renderClases() {
     const container = document.getElementById('clases-container');
     if(!container) return;
+    
     container.innerHTML = clasesData.map(item => `
         <div class="bg-cardDark p-4 md:p-6 rounded-2xl border border-cardBorder flex flex-col md:flex-row items-start md:items-center justify-between ${item.borderHover} transition-colors gap-4">
             <div class="flex items-center gap-4 md:gap-6 w-full">
                 <div class="${item.colorBg} ${item.colorText} border ${item.colorBorder} p-3 md:p-4 rounded-xl text-center min-w-[70px] md:min-w-[80px]">
-                    <span class="block text-xl md:text-2xl font-black">SAB</span>
+                    <span class="block text-xl md:text-2xl font-black">
+                        ${item.titulo.includes("Lectura") ? 'VIE' : 'SAB'}
+                    </span>
                     <span class="block text-xs uppercase font-semibold">${item.emoji}</span>
                 </div>
                 <div>
@@ -613,11 +616,18 @@ const temasMateria = {
         colorBorde: 'border-purple-500/30',
         colorSombra: 'rgba(168,85,247,0.3)',
         temas: [
-            'Avisos y diálogos cotidianos',
-            'Comprensión literal de textos',
-            'Vocabulario en contexto',
-            'Gramática básica e intermedia',
-            'Lectura inferencial'
+            'Avisos y Lugares',
+            'Profesiones y Objetos',
+            'Conversaciones Cortas',
+            'Preposiciones (In, On, At)',
+            'Relativos (Who, Which, That)',
+            'Conectores y Adverbios',
+            'Pasado vs. Presente Perfecto',
+            'Verbos Modales',
+            'Comparativos y Superlativos',
+            'Comprensión de Inferencial',
+
+
         ]
     },
     'naturales': {
@@ -641,11 +651,17 @@ const temasMateria = {
         colorBorde: 'border-red-500/30',
         colorSombra: 'rgba(239,68,68,0.3)',
         temas: [
-            'Aritmética y proporcionalidad',
-            'Álgebra y cálculo de funciones',
-            'Geometría plana y espacial',
-            'Estadística descriptiva',
-            'Probabilidad'
+            'Análisis de Gráficas Y Proporcionalidad',
+            'Porcentajes, Regla de tres, Cálculo Mental',
+            'Despejes Y álgebra Básica',
+            'Operaciones con números Reales',
+            'Áreas Y Volúmenes',
+            'Medidas de Tendencia Central Y dispersión',
+            'Triángulos Y teorema de pitágoras',
+            'Razones Trigonométricas,Leyes del seno y coseno',
+            'Funciones',
+            'Probabilidad',
+
         ]
     },
     'lectura': {
