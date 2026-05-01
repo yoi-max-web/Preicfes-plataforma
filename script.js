@@ -1,7 +1,7 @@
 import { auth, provider, db } from "./firebase-config.js";
 import { signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
 import { collection, onSnapshot, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
-
+import { generarRankingEstudiantes } from "./reportes.js";
 window.validarYDescargar = async function() {
     const documento = document.getElementById('input-id-modal')?.value.trim();
     const grado = document.getElementById('input-grado-modal')?.value.trim().toUpperCase();
@@ -30,11 +30,35 @@ window.validarYDescargar = async function() {
 
         alert('Validación correcta. Ahora puedes descargar tus resultados.');
         // TODO: aquí puedes llamar a la función que genera el PDF.
-    } catch (error) {
+  
+// --- INICIO INTEGRACIÓN DASHBOARD ---
+        // 1. Ocultar el modal actual (si es que usas uno) y secciones activas
+        document.querySelectorAll('.spa-section').forEach(s => s.classList.remove('active'));
+
+        // 2. Activar la sección del dashboard
+        const dash = document.getElementById('dashboard-main');
+        dash.classList.add('active');
+
+        // 3. Renderizar con los datos reales de Firebase
+        renderDashboard({
+            nombre: resultadoData.nombre,
+            puesto: resultadoData.puesto,
+            puntajeTotal: resultadoData.global,
+            asignaturas: [
+                { nombre: "Matemáticas", icono: "󰪚", percentil: resultadoData.puntajes.Matematicas, colorHex: "#10b981", competencias: "Razonamiento y resolución.", datosGrafica: [40, 55, 60, resultadoData.puntajes.Matematicas] },
+                { nombre: "Lectura Crítica", icono: "󰉬", percentil: resultadoData.puntajes.Lectura, colorHex: "#3b82f6", competencias: "Interpretación de textos.", datosGrafica: [45, 50, 48, resultadoData.puntajes.Lectura] },
+                { nombre: "Sociales", icono: "󰆦", percentil: resultadoData.puntajes.Sociales, colorHex: "#f59e0b", competencias: "Pensamiento sistémico.", datosGrafica: [30, 40, 50, resultadoData.puntajes.Sociales] },
+                { nombre: "Ciencias", icono: "󰫩", percentil: resultadoData.puntajes.Ciencias, colorHex: "#ec4899", competencias: "Explicación de fenómenos.", datosGrafica: [35, 45, 55, resultadoData.puntajes.Ciencias] },
+                { nombre: "Inglés", icono: "󰗊", percentil: resultadoData.puntajes.Ingles, colorHex: "#8b5cf6", competencias: "Comprensión lingüística.", datosGrafica: [60, 65, 70, resultadoData.puntajes.Ingles] }
+            ]
+        });
+          } catch (error) {
         console.error('Error al validar el resultado:', error);
         alert('Ocurrió un error al validar. Intenta de nuevo más tarde.');
     }
 };
+
+  
 
 // Variables globales de estado
 let isInitialAuthCheck = true; 
@@ -83,13 +107,13 @@ const simulacrosData = [
 ];
 
 const simulacrosCompletosData = [
-    { titulo: "S11-X", preguntas: 120, tagClass: "bg-emerald-500/10 text-emerald-400", borderHover: "hover:border-emerald-500", btnClass: "bg-emerald-600 hover:bg-emerald-700 shadow-[0_0_15px_rgba(16,185,129,0.3)]", iconClass: "text-emerald-400", desc: "Prueba completa evaluando todas las áreas. Formato real ICFES, sesión mañana.", linkCuadernillo: "#", linkFormulario: "#" }
+    { titulo: "S11-X", preguntas: 50, tagClass: "bg-emerald-500/10 text-emerald-400", borderHover: "hover:border-emerald-500", btnClass: "bg-emerald-600 hover:bg-emerald-700 shadow-[0_0_15px_rgba(16,185,129,0.3)]", iconClass: "text-emerald-400", desc: "Simulacro Con Todas Las áreas", linkCuadernillo: "#", linkFormulario: "#" }
 ];
 
 const clasesData = [
     { titulo: "Ciencias Naturales & Sociales", horario: "3:00PM-5:00PM | Ángel Sepúlveda", emoji: "🧬", colorText: "text-green-500", colorBg: "bg-green-500/10", colorBorder: "border-green-500/20", borderHover: "hover:border-green-500", btnClass: "bg-green-500 hover:bg-green-600 shadow-[0_0_10px_rgba(34,197,94,0.3)]", link: "https://meet.google.com/wwh-uuih-qrs" },
     { titulo: "Inglés & Matemáticas", horario: "10:00AM-12:00AM | Yoimar Serrano", emoji: "🗽", colorText: "text-purple-600", colorBg: "bg-purple-500/10", colorBorder: "border-purple-500/20", borderHover: "hover:border-purple-500", btnClass: "bg-purple-600 hover:bg-purple-700 shadow-[0_0_10px_rgba(147,51,234,0.3)]", link: "https://meet.google.com/crf-qfxc-wmi" },
-    { titulo: "Lectura Crítica", horario: "7:00 PM - 8:30 PM | Daniela", emoji: "📚", colorText: "text-orange-500", colorBg: "bg-orange-500/10", colorBorder: "border-orange-500/20", borderHover: "hover:border-orange-500", btnClass: "bg-orange-500 hover:bg-orange-600 shadow-[0_0_10px_rgba(249,115,22,0.3)]", link: "https://meet.google.com/wys-kwhx-fnv" }
+    { titulo: "Lectura Crítica", horario: "7:00 PM - 8:30 PM | Daniela", emoji: "📚", colorText: "text-orange-500", colorBg: "bg-orange-500/10", colorBorder: "border-orange-500/20", borderHover: "hover:border-orange-500", btnClass: "bg-orange-500 hover:bg-orange-600 shadow-[0_0_10px_rgba(249,115,22,0.3)]", link: "https://meet.google.com/dvh-txxe-snq" }
 ];
 
 const grabacionesDataLectura = [{ num: "01", titulo: "Tipologías Textuales", desc: "Niveles de lectura inicial.", url: "", desafio: "" }];
@@ -245,6 +269,28 @@ function renderTutores() {
             </div>
         </div>
     `).join('');
+}
+async function renderRanking() {
+    // Asegúrate de que el ID 'tabla-ranking-body' exista en el tbody de tu tabla HTML
+    const container = document.getElementById('tabla-ranking-body'); 
+    if(!container) return;
+    
+    container.innerHTML = `<tr><td colspan="3" class="text-center text-textMuted py-4"><i class="fa-solid fa-spinner fa-spin"></i> Cargando posiciones...</td></tr>`;
+
+    try {
+        const ranking = await generarRankingEstudiantes();
+        
+        container.innerHTML = ranking.map(estudiante => `
+            <tr class="border-b border-cardBorder hover:bg-sidebar transition-colors">
+                <td class="p-4 text-white font-bold text-center">#${estudiante.puesto}</td>
+                <td class="p-4 text-white">${estudiante.nombre}</td>
+                <td class="p-4 text-accent font-bold text-center">${estudiante.global} pts</td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        console.error("No se pudo cargar la tabla de posiciones", error);
+        container.innerHTML = `<tr><td colspan="3" class="text-center text-red-500 py-4">Error al cargar el ranking.</td></tr>`;
+    }
 }
 
 function setupContactForm() {
@@ -406,6 +452,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderClases();
     renderGrabaciones();
     renderTutores();
+    renderRanking();
     setupContactForm();
     setupEventListeners();
     setupFolders();
@@ -811,3 +858,4 @@ window.volverCarpetas = function() {
     vistaArchivos.classList.add('hidden');
     vistaCarpetas.classList.remove('hidden');
 };
+

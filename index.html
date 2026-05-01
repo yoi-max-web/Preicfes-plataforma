@@ -8,7 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
-    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* Estilos de Scrollbar Personalizada para modo oscuro */
         #content-area::-webkit-scrollbar,
@@ -102,6 +102,34 @@
                     <!-- <button id="nav-ranking" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-sidebarHover text-textMuted hover:text-white font-medium">
                         <i class="fa-solid fa-ranking-star w-5"></i> Ranking Saber 11
                     </button> -->
+                    <div id="dashboard-main" class="hidden bg-[#0f172a] min-h-screen p-4 md:p-8 font-sans text-slate-100">
+    <header class="flex justify-between items-center mb-8 border-b border-slate-800 pb-4">
+        <h1 class="text-2xl md:text-3xl font-black tracking-tight text-white">Resultados Académicos</h1>
+        <button onclick="irAlInicio()" class="bg-slate-800 hover:bg-slate-700 text-sm font-semibold py-2 px-4 rounded-lg transition-colors border border-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500">
+            Regresar al Inicio
+        </button>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <section class="lg:col-span-4 xl:col-span-3 flex flex-col items-center justify-center bg-[#1e293b] p-8 rounded-2xl border border-slate-800 shadow-xl">
+            <div class="relative w-52 h-52 mb-6">
+                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#0f172a" stroke-width="8" stroke-linecap="round"></circle>
+                    <circle id="progreso-anillo" cx="50" cy="50" r="45" fill="none" stroke="#10b981" stroke-width="8" stroke-dasharray="283" stroke-dashoffset="283" stroke-linecap="round" class="transition-all duration-1000 ease-out"></circle>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <span id="puntaje-total" class="text-5xl font-black text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">0</span>
+                    <span class="text-sm font-medium text-slate-400 mt-1">/ 500 Puntos</span>
+                </div>
+            </div>
+            <h2 id="nombre-estudiante" class="text-2xl font-bold text-center text-white mb-1"></h2>
+            <p id="puesto-estudiante" class="text-slate-400 font-medium text-center uppercase tracking-wider text-sm"></p>
+        </section>
+
+        <section id="contenedor-materias" class="lg:col-span-8 xl:col-span-9 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+        </section>
+    </main>
+</div>
                     <button id="nav-tutores" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-sidebarHover text-textMuted hover:text-white font-medium">
                         <i class="fa-solid fa-users w-5"></i> Tutores 
                     </button>
@@ -197,7 +225,7 @@
                         <h3 class="text-3xl font-bold text-white mb-2">Centro de Simulacros</h3>
                         <p class="text-textMuted mb-8">Para realizar el simulacro, envía tus respuestas únicamente por el formulario. Solo tienes un intento e ingresa con tu <b>Correo Personal.</b></p>
                         
-                        <div class="bg-cardDark border border-cardBorder rounded-2xl overflow-hidden mb-6">
+                        <!-- <div class="bg-cardDark border border-cardBorder rounded-2xl overflow-hidden mb-6">
                             <button class="folder-toggle w-full flex items-center justify-between p-5 cursor-pointer hover:bg-accent/5 transition-colors focus:outline-none" data-target="folder-areas">
                                 <div class="flex items-center gap-4">
                                     <div class="text-accent text-3xl w-10 text-center">
@@ -220,7 +248,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
 
                         <div class="bg-cardDark border border-cardBorder rounded-2xl overflow-hidden mb-6">
                             <button class="folder-toggle w-full flex items-center justify-between p-5 cursor-pointer hover:bg-emerald-500/5 transition-colors focus:outline-none" data-target="folder-completos">

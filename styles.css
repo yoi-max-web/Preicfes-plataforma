@@ -192,3 +192,34 @@ summary:focus {
     border-color: rgba(16, 185, 129, 0.4);
     background-color: rgba(2, 5, 2, 0.8); /* Equivalente a bg-sidebar con opacidad */
 }
+#dashboard-main {
+    --dash-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tarjeta-materia {
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    transition: var(--dash-transition);
+    position: relative;
+    z-index: 1;
+}
+
+.tarjeta-materia::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: 0 0 20px var(--color-materia), inset 0 0 10px var(--color-materia);
+    opacity: 0;
+    z-index: -1;
+    transition: var(--dash-transition);
+}
+
+.tarjeta-materia:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-materia);
+}
+
+.tarjeta-materia:hover::before {
+    opacity: 0.15;
+}
