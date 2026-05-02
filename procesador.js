@@ -17,11 +17,10 @@ async function procesarRankingTerminal() {
     try {
         console.log("🚀 Iniciando motor de procesamiento...");
 
-        // Aquí quitamos el[cite: 2] que causaba el error
         const snapshot = await db.collection('respuestas_brutas').get();
         
         if (snapshot.empty) {
-            console.log("❌ No hay datos para procesar.");
+            console.log("❌ No hay datos en 'respuestas_brutas' para procesar.");
             return;
         }
 
@@ -54,7 +53,7 @@ async function procesarRankingTerminal() {
             }
         });
 
-        // Ordenar con desempate: Lectura > Matemáticas
+        // Ordenar con desempate: Global DESC, Lectura DESC, Matemáticas DESC
         estudiantes.sort((a, b) => {
             if (b.global !== a.global) return b.global - a.global;
             if (b.puntajes.Lectura !== a.puntajes.Lectura) return b.puntajes.Lectura - a.puntajes.Lectura;
@@ -63,16 +62,29 @@ async function procesarRankingTerminal() {
 
         // Guardar resultados procesados
         const batch = db.batch();
+        
         estudiantes.forEach((est, index) => {
+            // 1. Guardar en 'detalles_reporte' para tus futuros PDFs manuales
             const refReporte = db.collection('detalles_reporte').doc(est.id);
             batch.set(refReporte, {
                 ...est,
                 puesto: index + 1
             });
+
+            // 2. Guardar en 'resultados_simulacro' para el RANKING de la web
+            // Usamos 'puntajeGlobal' para que coincida con lo que tu web espera
+            const refRanking = db.collection('resultados_simulacro').doc(est.id);
+            batch.set(refRanking, {
+                nombre: est.nombre,
+                grado: est.grado,
+                puesto: index + 1,
+                puntajeGlobal: est.global
+            });
         });
 
         await batch.commit();
         console.log(`✅ ¡Hecho! Se procesaron ${estudiantes.length} estudiantes.`);
+        console.log("👉 Ambas colecciones han sido actualizadas.");
 
     } catch (error) {
         console.error("❌ ERROR CRÍTICO:", error);

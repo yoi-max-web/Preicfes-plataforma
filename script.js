@@ -127,7 +127,13 @@ const grabacionesDataMatematicas = [{
    
     desafio: "DESAFÍO: Encontra un error en la clase. ¿Puedes hallarlo? deja tu cometario" 
 }];
-const grabacionesDataIngles = [{ num: "01", titulo: "Avisos y Señales", desc: "Interpretación visual.", url: "", desafio: "" }];
+const grabacionesDataIngles = [{ 
+    num: "01", 
+    titulo: "Avisos y Señales", 
+    desc: "Interpretación visual.", 
+    url: "https://www.youtube.com/watch?v=o2wPAkryCAM", 
+    desafio: "DESAFÍO: Identifica qué contexto específico representa cada señal. ¿Cuál te parece más confusa? ¡Déjalo en los comentarios!" 
+}];
 const grabacionesDataSociales = [{ num: "01", titulo: "Constitución Política", desc: "Derechos y deberes.", url: "", desafio: "" }];
 const tutoresData = [
     { nombre: "Yoimar Serrano", materia: "Inglés & Matemáticas", desc: "Hola, soy Yoimar. Mi enfoque son los idiomas y quiero que dominemos juntos matemáticas e inglés.", img: "/imgs/Yo.jpg", borderHover: "hover:border-purple-500", badgeBg: "bg-purple-500/10", badgeBorder: "border-purple-500/30", badgeText: "text-purple-400", gradient: "from-purple-500/10" },
@@ -270,27 +276,28 @@ function renderTutores() {
         </div>
     `).join('');
 }
-async function renderRanking() {
-    // Asegúrate de que el ID 'tabla-ranking-body' exista en el tbody de tu tabla HTML
+function renderRanking() {
     const container = document.getElementById('tabla-ranking-body'); 
     if(!container) return;
-    
-    container.innerHTML = `<tr><td colspan="3" class="text-center text-textMuted py-4"><i class="fa-solid fa-spinner fa-spin"></i> Cargando posiciones...</td></tr>`;
 
-    try {
-        const ranking = await generarRankingEstudiantes();
+    // Creamos una consulta que ordena los datos por 'puesto' automáticamente
+    const q = query(collection(db, "detalles_reporte"), orderBy("puesto", "asc"));
+
+    // onSnapshot hace que la tabla se actualice SOLA cada vez que procesador.js termine
+    onSnapshot(q, (snapshot) => {
+        container.innerHTML = ""; // Limpiar tabla
         
-        container.innerHTML = ranking.map(estudiante => `
-            <tr class="border-b border-cardBorder hover:bg-sidebar transition-colors">
-                <td class="p-4 text-white font-bold text-center">#${estudiante.puesto}</td>
-                <td class="p-4 text-white">${estudiante.nombre}</td>
-                <td class="p-4 text-accent font-bold text-center">${estudiante.global} pts</td>
-            </tr>
-        `).join('');
-    } catch (error) {
-        console.error("No se pudo cargar la tabla de posiciones", error);
-        container.innerHTML = `<tr><td colspan="3" class="text-center text-red-500 py-4">Error al cargar el ranking.</td></tr>`;
-    }
+        snapshot.forEach((doc) => {
+            const estudiante = doc.data();
+            container.innerHTML += `
+                <tr class="border-b border-cardBorder hover:bg-sidebar transition-colors">
+                    <td class="p-4 text-white font-bold text-center">#${estudiante.puesto}</td>
+                    <td class="p-4 text-white">${estudiante.nombre}</td>
+                    <td class="p-4 text-accent font-bold text-center">${estudiante.global} pts</td>
+                </tr>
+            `;
+        });
+    });
 }
 
 function setupContactForm() {
