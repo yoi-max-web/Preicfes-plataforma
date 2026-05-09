@@ -127,13 +127,22 @@ const grabacionesDataMatematicas = [{
    
     desafio: "DESAFÍO: Encontra un error en la clase. ¿Puedes hallarlo? deja tu cometario" 
 }];
-const grabacionesDataIngles = [{ 
-    num: "01", 
-    titulo: "Avisos y Señales", 
-    desc: "Interpretación visual.", 
-    url: "https://www.youtube.com/watch?v=o2wPAkryCAM", 
-    desafio: "DESAFÍO: Identifica qué contexto específico representa cada señal. ¿Cuál te parece más confusa? ¡Déjalo en los comentarios!" 
-}];
+const grabacionesDataIngles = [
+    { 
+        num: "01", 
+        titulo: "Avisos y Señales", 
+        desc: "Interpretación visual.", 
+        url: "https://www.youtube.com/watch?v=o2wPAkryCAM", 
+        desafio: "DESAFÍO: Identifica qué contexto específico representa cada señal. ¿Cuál te parece más confusa? ¡Déjalo en los comentarios!" 
+    },
+    { 
+        num: "02", 
+        titulo: "Resolviendo Cuadernillo", 
+        desc: "Estrategias de descarte y verbos clave.", 
+        url: "https://www.awesomescreenshot.com/video/52361095?key=e813f9fc168a2343d2ad3dcf8b9725f9", 
+        desafio: "DESAFÍO: De los ejemplos del video (como 'Enjoy this with milk'), ¿qué otra palabra clave usarías para identificar un restaurante? ¡Escríbela!" 
+    }
+];
 const grabacionesDataSociales = [{ num: "01", titulo: "Constitución Política", desc: "Derechos y deberes.", url: "", desafio: "" }];
 const tutoresData = [
     { nombre: "Yoimar Serrano", materia: "Inglés & Matemáticas", desc: "Hola, soy Yoimar. Mi enfoque son los idiomas y quiero que dominemos juntos matemáticas e inglés.", img: "/imgs/Yo.jpg", borderHover: "hover:border-purple-500", badgeBg: "bg-purple-500/10", badgeBorder: "border-purple-500/30", badgeText: "text-purple-400", gradient: "from-purple-500/10" },
@@ -179,7 +188,7 @@ function renderSimulacrosCompletos() {
             <div class="p-6 flex-1 flex flex-col justify-between">
                 <p class="text-textMuted text-sm mb-6">${item.desc}</p>
                 <div class="space-y-3">
-                    <a href="${item.linkCuadernillo}" target="_blank" class="w-full bg-sidebar hover:bg-gray-800 text-textLight py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 border border-cardBorder">
+                    <a href="https://drive.google.com/file/d/1MvXIQjQ9cbyEEZ4Qayuki-GuZijT5Obk/view?usp=drive_link" target="_blank" class="w-full bg-sidebar hover:bg-gray-800 text-textLight py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 border border-cardBorder">
                         <i class="fa-solid fa-book-open ${item.iconClass} text-lg"></i> Ver Cuadernillo
                     </a>
                     <a href="${item.linkFormulario}" target="_blank" class="w-full ${item.btnClass} text-white py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2">
