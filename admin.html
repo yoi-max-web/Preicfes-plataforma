@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Pre-ICFES</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        mainBg:     '#0d1117',
+                        cardBg:     '#161b22',
+                        cardBorder: '#30363d',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: #0d1117;
+            color: #f0fdf4;
+            scroll-behavior: smooth;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0d1117; }
+        ::-webkit-scrollbar-thumb { background: #1a2e1a; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #10b981; }
+
+        .glow-card { transition: all 0.3s ease; }
+        .glow-card:hover {
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+            border-color: #10b981;
+        }
+
+        .file-card { transition: all 0.2s ease-in-out; }
+        .file-card:hover {
+            border-color: rgba(16, 185, 129, 0.4);
+            background-color: rgba(16, 185, 129, 0.05);
+        }
+
+        #app-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        /* Navbar responsive: en móvil apila los botones */
+        @media (max-width: 639px) {
+            #navbar-actions {
+                gap: 0.5rem;
+            }
+            #btn-volver span,
+            #btn-logout span {
+                display: none;
+            }
+        }
+
+        /* Tabla scroll en móvil */
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Secciones: altura fija en desktop, automática en móvil */
+        .panel-section {
+            height: auto;
+            min-height: 400px;
+        }
+        @media (min-width: 1024px) {
+            .panel-section {
+                height: 80vh;
+            }
+        }
+    </style>
+</head>
+<body class="bg-mainBg text-gray-200 font-sans">
+
+    <!-- Pantalla de Carga -->
+    <div id="loader" class="fixed inset-0 flex flex-col items-center justify-center bg-mainBg z-50">
+        <i class="fa-solid fa-circle-notch fa-spin text-4xl text-emerald-500 mb-4"></i>
+        <h2 class="text-xl font-bold tracking-wider text-emerald-400">Verificando Credenciales...</h2>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div id="app-content" class="flex flex-col min-h-screen">
+
+        <!-- ═══════════════ NAVBAR ═══════════════ -->
+        <nav class="bg-cardBg border-b border-cardBorder px-4 sm:px-6 py-3 flex items-center justify-between shadow-lg sticky top-0 z-30">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-user-shield text-emerald-500 text-xl sm:text-2xl"></i>
+                <h1 class="text-lg sm:text-2xl font-black tracking-tight text-white">
+                    Panel del <span class="text-emerald-500">Profesor</span>
+                </h1>
+            </div>
+
+            <div id="navbar-actions" class="flex items-center gap-2">
+                <!-- Botón Volver: icono solo en móvil, texto en sm+ -->
+                <button id="btn-volver"
+                    class="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg border border-cardBorder hover:border-emerald-500 hover:text-emerald-400 transition-colors text-sm font-semibold">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span class="hidden sm:inline">Volver al Inicio</span>
+                </button>
+                <!-- Botón Logout -->
+                <button id="btn-logout"
+                    class="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all text-sm font-semibold">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span class="hidden sm:inline">Cerrar Sesión</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- ═══════════════ MAIN ═══════════════ -->
+        <main class="flex-1 p-4 sm:p-6">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+
+                <!-- ── SECCIÓN A: RANKING ── -->
+                <section class="panel-section bg-cardBg border border-cardBorder rounded-xl shadow-xl flex flex-col glow-card overflow-hidden">
+
+                    <!-- Header de la sección -->
+                    <div class="p-4 sm:p-5 border-b border-cardBorder bg-cardBg shrink-0">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-trophy text-yellow-500 text-xl"></i>
+                            <h2 class="text-lg sm:text-xl font-black text-white">Ranking del Simulacro</h2>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-1">Resultados globales ordenados por puntaje (Mayor a Menor).</p>
+                    </div>
+
+                    <!-- Tabla con scroll -->
+                    <div class="flex-1 table-wrapper">
+                        <table class="w-full text-left border-collapse min-w-[400px]">
+                            <thead class="sticky top-0 bg-mainBg border-b border-cardBorder shadow-sm z-20">
+                                <tr>
+                                    <th class="px-4 py-3 font-black text-emerald-500 tracking-wider text-xs sm:text-sm uppercase">#</th>
+                                    <th class="px-4 py-3 font-black text-emerald-500 tracking-wider text-xs sm:text-sm uppercase">Estudiante</th>
+                                    <th class="px-4 py-3 font-black text-emerald-500 tracking-wider text-xs sm:text-sm uppercase">Grado</th>
+                                    <th class="px-4 py-3 font-black text-emerald-500 tracking-wider text-xs sm:text-sm uppercase text-right">Puntaje</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ranking-tbody">
+                                <tr>
+                                    <td colspan="4" class="p-8 text-center text-gray-500">
+                                        <i class="fa-solid fa-spinner fa-spin mr-2"></i> Cargando ranking...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- ── SECCIÓN B: ASISTENCIA EN VIVO ── -->
+                <section class="panel-section bg-cardBg border border-cardBorder rounded-xl shadow-xl flex flex-col glow-card overflow-hidden">
+
+                    <!-- Header de la sección -->
+                    <div class="p-4 sm:p-5 border-b border-cardBorder bg-cardBg shrink-0">
+                        <div class="flex items-center justify-between gap-3">
+                            <div>
+                                <div class="flex items-center gap-3">
+                                    <i class="fa-solid fa-users text-emerald-500 text-xl"></i>
+                                    <h2 class="text-lg sm:text-xl font-black text-white">Asistencia en Vivo</h2>
+                                    <!-- Pulso animado -->
+                                    <span class="flex h-3 w-3 relative">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                                    </span>
+                                </div>
+                                <p class="text-sm text-gray-400 mt-1">Registro de ingreso en tiempo real.</p>
+                            </div>
+
+                            <!-- Botón exportar CSV -->
+                            <button id="btn-exportar"
+                                class="shrink-0 flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-3 sm:px-4 py-2 rounded-lg font-bold shadow-lg shadow-emerald-500/20 transition-all transform hover:-translate-y-0.5 text-sm">
+                                <i class="fa-solid fa-file-csv"></i>
+                                <span class="hidden sm:inline">Exportar CSV</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tabla con scroll -->
+                    <div class="flex-1 table-wrapper">
+                        <table class="w-full text-left border-collapse min-w-[320px]">
+                            <thead class="sticky top-0 bg-mainBg border-b border-cardBorder shadow-sm z-20">
+                                <tr>
+                                    <th class="px-4 py-3 font-black text-emerald-500 tracking-wider text-xs sm:text-sm uppercase">Estudiante</th>
+                                    <th class="px-4 py-3 font-black text-emerald-500 tracking-wider text-xs sm:text-sm uppercase text-right">Hora de Ingreso</th>
+                                </tr>
+                            </thead>
+                            <tbody id="asistencia-tbody">
+                                <tr>
+                                    <td colspan="2" class="p-8 text-center text-gray-500">
+                                        <i class="fa-solid fa-spinner fa-spin mr-2"></i> Esperando registros...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+
+    <!-- ═══════════════════════════════════════════════
+         SCRIPT PRINCIPAL — Firebase v12.11.0 (igual que script.js)
+    ════════════════════════════════════════════════ -->
+    <script type="module">
+        import { auth, db } from "./firebase-config.js";
+        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+        import { collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+        // ── Correos con acceso admin ──────────────────────────────────────────
+        const CORREOS_ADMIN = [
+            "yoimarserrano40@gmail.com",
+            "correo2@gmail.com",
+            "correo3@gmail.com",
+            "correo4@gmail.com"
+        ];
+
+        // ── Mostrar panel ─────────────────────────────────────────────────────
+        function showPanel() {
+            const loader  = document.getElementById('loader');
+            const content = document.getElementById('app-content');
+            if (loader)  loader.style.display = 'none';
+            if (content) {
+                content.style.display = 'flex';
+                requestAnimationFrame(() => { content.style.opacity = '1'; });
+            }
+        }
+
+        // ── Guardia de autenticación ──────────────────────────────────────────
+        onAuthStateChanged(auth, (user) => {
+            if (user && CORREOS_ADMIN.includes(user.email)) {
+                sessionStorage.removeItem('redirectingToAdmin');
+                console.log("✅ Admin confirmado:", user.email);
+                showPanel();
+                iniciarDashboard();
+            } else {
+                console.warn("⛔ Acceso no autorizado.");
+                window.location.href = 'index.html';
+            }
+        });
+
+        // ── Botones de navegación ─────────────────────────────────────────────
+        document.getElementById('btn-volver')?.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        document.getElementById('btn-logout')?.addEventListener('click', () => {
+            signOut(auth)
+                .then(() => {
+                    sessionStorage.removeItem('redirectingToAdmin');
+                    window.location.href = 'index.html';
+                })
+                .catch((err) => {
+                    console.error("Error al cerrar sesión:", err);
+                    alert("Error al cerrar sesión. Intenta de nuevo.");
+                });
+        });
+
+        // ═════════════════════════════════════════════════════════════════════
+        // DASHBOARD
+        // ═════════════════════════════════════════════════════════════════════
+        let datosAsistenciaExportar = [];
+
+        function iniciarDashboard() {
+            cargarRanking();
+            cargarAsistencia();
+            configurarExportarCSV();
+        }
+
+        // ── A: RANKING ────────────────────────────────────────────────────────
+
+        /**
+         * Extrae el puntaje de un documento de Firestore de forma inteligente:
+         * 1. Busca campos con nombres conocidos (global, puntajeTotal, total…)
+         * 2. Si no los encuentra, suma todos los sub-campos del objeto "puntajes"
+         * 3. Si tampoco, recorre TODOS los campos numéricos del doc y suma los razonables (>0 y ≤500)
+         */
+        function extraerPuntaje(data) {
+            // 1. Candidatos directos — incluyendo strings que representan números
+            const candidatos = [
+                'global','Global','puntajeTotal','PuntajeTotal',
+                'total','Total','puntaje','Puntaje','score','Score',
+                'resultado','Resultado','nota','Nota','puntos','Puntos'
+            ];
+            for (const c of candidatos) {
+                if (data[c] !== undefined && data[c] !== null) {
+                    const v = parseFloat(String(data[c]).replace(',', '.'));
+                    if (!isNaN(v) && v > 0) return Math.round(v);
+                }
+            }
+
+            // 2. Sumar sub-objeto "puntajes" (Matematicas, Lectura, Sociales…)
+            const subObj = data.puntajes || data.Puntajes || data.materias || data.scores;
+            if (subObj && typeof subObj === 'object' && !Array.isArray(subObj)) {
+                const suma = Object.values(subObj)
+                    .map(v => parseFloat(String(v).replace(',', '.')) || 0)
+                    .reduce((a, b) => a + b, 0);
+                if (suma > 0) return Math.round(suma);
+            }
+
+            // 3. Fallback: recorrer TODOS los campos numéricos con valor razonable (>0 y ≤1000)
+            //    y quedarnos con el mayor
+            let maxVal = 0;
+            for (const [key, val] of Object.entries(data)) {
+                if (key.startsWith('_') || key === 'id') continue;
+                const v = parseFloat(String(val).replace(',', '.'));
+                if (!isNaN(v) && v > 0 && v <= 1000 && v > maxVal) {
+                    maxVal = Math.round(v);
+                }
+            }
+            return maxVal;
+        }
+
+        function extraerTexto(data, ...campos) {
+            for (const c of campos) {
+                const v = data[c];
+                if (v && typeof v === 'string' && v.trim()) return v.trim();
+            }
+            return null;
+        }
+
+        async function cargarRanking() {
+            const tbody = document.getElementById('ranking-tbody');
+            tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-gray-500">
+                <i class="fa-solid fa-spinner fa-spin mr-2"></i> Cargando ranking...</td></tr>`;
+            try {
+                const snapshot = await getDocs(collection(db, 'resultados_simulacro'));
+
+                if (snapshot.empty) {
+                    tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-gray-500">
+                        <i class="fa-solid fa-inbox mr-2"></i>Aún no hay resultados registrados.</td></tr>`;
+                    return;
+                }
+
+                // Log de diagnóstico en consola
+                const primerData = snapshot.docs[0].data();
+                console.log("📄 Primer doc (resultados_simulacro):", primerData);
+                console.log("🔑 Campos:", Object.keys(primerData));
+
+                const resultados = snapshot.docs
+                    .map(doc => {
+                        const data = { id: doc.id, ...doc.data() };
+                        return {
+                            nombre:   extraerTexto(data, 'nombre','Nombre','name','Name','estudiante','Estudiante') || 'Sin nombre',
+                            grado:    extraerTexto(data, 'grado','Grado','grade','Grade','curso','Curso') || 'N/A',
+                            puntaje:  extraerPuntaje(data)
+                        };
+                    })
+                    .sort((a, b) => b.puntaje - a.puntaje);
+
+                tbody.innerHTML = '';
+                resultados.forEach((item, i) => {
+                    let cls  = "text-gray-400 font-bold";
+                    let icon = `<span class="text-gray-600 text-xs mr-1">#</span>`;
+                    if (i === 0) { cls = "text-yellow-400 font-black text-base"; icon = `<i class="fa-solid fa-medal text-yellow-400 mr-1"></i>`; }
+                    else if (i === 1) { cls = "text-gray-300 font-bold"; icon = `<i class="fa-solid fa-medal text-gray-400 mr-1"></i>`; }
+                    else if (i === 2) { cls = "text-amber-600 font-bold"; icon = `<i class="fa-solid fa-medal text-amber-600 mr-1"></i>`; }
+
+                    tbody.innerHTML += `
+                        <tr class="file-card border-b border-[#30363d]/60 hover:bg-emerald-500/5">
+                            <td class="px-4 py-3 ${cls} whitespace-nowrap">${icon}${i + 1}</td>
+                            <td class="px-4 py-3 font-semibold text-gray-200 whitespace-nowrap">${item.nombre}</td>
+                            <td class="px-4 py-3 text-gray-400 whitespace-nowrap">${item.grado}</td>
+                            <td class="px-4 py-3 text-right font-black text-emerald-400 text-lg whitespace-nowrap">
+                                ${item.puntaje > 0 ? item.puntaje : '<span class="text-gray-600 text-sm font-normal">—</span>'}
+                            </td>
+                        </tr>`;
+                });
+
+            } catch (err) {
+                console.error("❌ Ranking error:", err);
+                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-red-400">
+                    <i class="fa-solid fa-triangle-exclamation mr-2"></i>${err.code || err.message}</td></tr>`;
+            }
+        }
+
+        // ── B: ASISTENCIA ─────────────────────────────────────────────────────
+        // Usa onSnapshot (tiempo real). Si las reglas de Firestore no lo permiten,
+        // cae automáticamente a getDocs + refresco cada 30 segundos.
+
+        let asistenciaInterval = null;
+
+        function renderAsistencia(snapshot) {
+            const tbody = document.getElementById('asistencia-tbody');
+            datosAsistenciaExportar = [];
+
+            if (!snapshot || snapshot.empty) {
+                tbody.innerHTML = `<tr><td colspan="2" class="p-6 text-center text-gray-500">
+                    Ningún estudiante ha ingresado todavía.</td></tr>`;
+                return;
+            }
+
+            let registros = [];
+            snapshot.forEach(doc => {
+                const d = doc.data();
+                let fechaMostrada = "Sin registrar";
+                let ts = 0;
+                // Acepta Firestore Timestamp, Date, número (ms) o string ISO
+                if (d.horaIngreso) {
+                    let dateObj;
+                    if (d.horaIngreso.toDate) dateObj = d.horaIngreso.toDate();
+                    else if (d.horaIngreso instanceof Date) dateObj = d.horaIngreso;
+                    else dateObj = new Date(d.horaIngreso);
+                    if (!isNaN(dateObj)) {
+                        ts = dateObj.getTime();
+                        fechaMostrada = dateObj.toLocaleString('es-CO', {
+                            day: '2-digit', month: '2-digit', year: 'numeric',
+                            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+                        });
+                    }
+                }
+                const nombre = extraerTexto(d, 'nombre','Nombre','name','estudiante') || 'Desconocido';
+                registros.push({ nombre, horaText: fechaMostrada, timestamp: ts });
+            });
+
+            registros.sort((a, b) => b.timestamp - a.timestamp);
+            tbody.innerHTML = '';
+            registros.forEach(r => {
+                datosAsistenciaExportar.push({ Nombre: r.nombre, Hora: r.horaText });
+                tbody.innerHTML += `
+                    <tr class="file-card border-b border-[#30363d]/60 hover:bg-emerald-500/5">
+                        <td class="px-4 py-3 font-semibold text-gray-200 whitespace-nowrap">
+                            <i class="fa-solid fa-user-check text-emerald-500/70 mr-2 text-sm"></i>${r.nombre}
+                        </td>
+                        <td class="px-4 py-3 text-right text-gray-400 font-mono text-xs sm:text-sm whitespace-nowrap">${r.horaText}</td>
+                    </tr>`;
+            });
+        }
+
+        function cargarAsistencia() {
+            const tbody = document.getElementById('asistencia-tbody');
+            const ref   = collection(db, 'asistencia');
+
+            // Intento 1: tiempo real con onSnapshot
+            const unsubscribe = onSnapshot(ref,
+                (snap) => {
+                    // Éxito → limpiamos el intervalo de fallback si existía
+                    if (asistenciaInterval) { clearInterval(asistenciaInterval); asistenciaInterval = null; }
+                    renderAsistencia(snap);
+                },
+                (err) => {
+                    // Falla (permiso denegado u otro error) → modo fallback con getDocs
+                    console.warn("⚠️ onSnapshot falló:", err.code, "— usando getDocs cada 30s");
+                    unsubscribe(); // cancelar listener roto
+
+                    const fetchFallback = async () => {
+                        try {
+                            const snap = await getDocs(ref);
+                            renderAsistencia(snap);
+                        } catch (e) {
+                            console.error("❌ Asistencia getDocs error:", e);
+                            tbody.innerHTML = `<tr><td colspan="2" class="p-6 text-center text-red-400">
+                                <i class="fa-solid fa-triangle-exclamation mr-2"></i>
+                                Sin acceso a asistencia (${e.code || e.message})
+                                <br><span class="text-xs text-gray-500 mt-1 block">Revisa las reglas de Firestore para la colección "asistencia"</span>
+                            </td></tr>`;
+                        }
+                    };
+
+                    fetchFallback(); // primera carga inmediata
+                    asistenciaInterval = setInterval(fetchFallback, 30000); // refresco cada 30s
+                }
+            );
+        }
+
+        // ── C: EXPORTAR CSV ───────────────────────────────────────────────────
+        function configurarExportarCSV() {
+            document.getElementById('btn-exportar')?.addEventListener('click', () => {
+                if (datosAsistenciaExportar.length === 0) {
+                    alert("No hay registros de asistencia para exportar.");
+                    return;
+                }
+
+                let csv = "\uFEFFNombre del Estudiante,Hora de Ingreso\n";
+                datosAsistenciaExportar.forEach(row => {
+                    csv += `"${row.Nombre}","${row.Hora}"\n`;
+                });
+
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url  = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.setAttribute("href", url);
+                link.setAttribute("download", `Reporte_Asistencia_${new Date().toISOString().split('T')[0]}.csv`);
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            });
+        }
+    </script>
+
+</body>
+</html>

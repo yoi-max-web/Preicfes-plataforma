@@ -1,6 +1,6 @@
 import { auth, provider, db } from "./firebase-config.js";
 import { signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-import { collection, onSnapshot, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+import { collection, onSnapshot, doc, getDoc, setDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 import { generarRankingEstudiantes } from "./reportes.js";
 window.validarYDescargar = async function() {
     const documento = document.getElementById('input-id-modal')?.value.trim();
@@ -191,7 +191,7 @@ function renderSimulacrosCompletos() {
                     <a href="https://drive.google.com/file/d/1MvXIQjQ9cbyEEZ4Qayuki-GuZijT5Obk/view?usp=drive_link" target="_blank" class="w-full bg-sidebar hover:bg-gray-800 text-textLight py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 border border-cardBorder">
                         <i class="fa-solid fa-book-open ${item.iconClass} text-lg"></i> Ver Cuadernillo
                     </a>
-                    <a href="${item.linkFormulario}" target="_blank" class="w-full ${item.btnClass} text-white py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2">
+                    <a href="https://forms.gle/5ouqFBSesJDtXNLF9" target="_blank" class="w-full ${item.btnClass} text-white py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2">
                         <i class="fa-solid fa-pen-nib text-lg"></i> Subir Respuestas
                     </a>
                 </div>
@@ -224,6 +224,7 @@ function renderClases() {
         </div>
     `).join('');
 }
+
 function renderGrabacionesList(containerId, data, color) {
     const container = document.getElementById(containerId);
     if(!container) return;
@@ -285,6 +286,7 @@ function renderTutores() {
         </div>
     `).join('');
 }
+
 function renderRanking() {
     const container = document.getElementById('tabla-ranking-body'); 
     if(!container) return;
@@ -562,6 +564,61 @@ const startCounterListener = () => {
     });
 };
 
+// =========================================================================
+// BLOQUE DE AUTENTICACIÓN — CORREGIDO
+// Corrección 1: sessionStorage flag evita el bucle index ↔ admin
+// Corrección 2: return inmediato impide ejecutar lógica de estudiante
+// =========================================================================
+
+// Agrega aquí los correos que deben tener acceso al panel de admin
+const CORREOS_ADMIN = [
+    "yoimarserrano40@gmail.com",
+    "joseyoalyeira@gmail.com",
+    "correo3@gmail.com",
+    "correo4@gmail.com"
+];
+
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        // 1. Si es admin → redirigir a admin.html y detener toda la lógica de estudiante.
+        //    El sessionStorage evita que el bucle se dispare si admin.html ya está cargando.
+        if (CORREOS_ADMIN.includes(user.email)) {
+            if (!sessionStorage.getItem('redirectingToAdmin')) {
+                sessionStorage.setItem('redirectingToAdmin', 'true');
+                console.log("Admin detectado. Redirigiendo a admin.html...");
+                window.location.href = 'admin.html';
+            }
+            return; // <- CRÍTICO: corta la ejecución, no continúa con lógica de estudiante
+        }
+
+        // 2. Es un estudiante (@gmail.com válido)
+        if (user.email && user.email.endsWith("@gmail.com")) {
+            sessionStorage.removeItem('redirectingToAdmin'); // Limpiar flag si vuelve al index
+            unlockApp();
+            startCounterListener();
+            try {
+                await setDoc(doc(db, 'usuarios', user.uid), {
+                    nombre: user.displayName || "Usuario",
+                    email: user.email,
+                    fechaRegistro: new Date().toISOString()
+                }, { merge: true });
+            } catch (e) {
+                console.error("Error al guardar usuario en Firestore:", e);
+            }
+        } else {
+            // 3. Cuenta no autorizada (no es Gmail)
+            await signOut(auth);
+            lockApp();
+            alert("Acceso denegado: Usa una cuenta @gmail.com autorizada.");
+        }
+    } else {
+        // 4. No hay sesión activa
+        sessionStorage.removeItem('redirectingToAdmin');
+        lockApp();
+    }
+    isInitialAuthCheck = false;
+});
+
 // Función para detener el listener al cerrar sesión
 const stopCounterListener = () => {
     if (unsubscribeCounter) {
@@ -573,42 +630,7 @@ const stopCounterListener = () => {
     if (el) el.textContent = "...";
 };
 
-// ESCUCHADOR DE SESIÓN
-onAuthStateChanged(auth, async (user) => {
-    if (user) {
-        if (user.email && user.email.endsWith("@gmail.com")) {
-            console.log("Sesión activa válida detectada:", user.email);
-            
-            unlockApp();
-            startCounterListener();
-            
-            try {
-                // Actualizamos los datos del usuario en Firestore, pero no bloqueamos el acceso si falla
-                await setDoc(doc(db, 'usuarios', user.uid), {
-                    nombre: user.displayName || "Usuario sin nombre",
-                    email: user.email,
-                    fechaRegistro: user.metadata?.creationTime || new Date().toISOString()
-                }, { merge: true });
-            } catch (error) {
-                console.error("Error al registrar usuario en Firestore:", error);
-            }
-        } else {
-            console.log("Correo no válido, cerrando sesión preventiva.");
-            stopCounterListener(); // Detenemos el listener por seguridad
-            await signOut(auth); 
-            lockApp();
-            
-            if (!isInitialAuthCheck) {
-                alert("Acceso denegado: Por favor usa una cuenta de Google finalizada en @gmail.com");
-            }
-        }
-    } else {
-        stopCounterListener(); // Limpiamos el listener si no hay sesión
-        lockApp();
-    }
-    
-    isInitialAuthCheck = false;
-});
+
 // =========================================================================
 // LÓGICA DEL MODAL DE VALIDACIÓN DE RESULTADOS
 // =========================================================================
@@ -874,4 +896,3 @@ window.volverCarpetas = function() {
     vistaArchivos.classList.add('hidden');
     vistaCarpetas.classList.remove('hidden');
 };
-
