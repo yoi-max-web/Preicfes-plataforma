@@ -191,7 +191,7 @@ function renderSimulacrosCompletos() {
                     <a href="https://drive.google.com/file/d/1MvXIQjQ9cbyEEZ4Qayuki-GuZijT5Obk/view?usp=drive_link" target="_blank" class="w-full bg-sidebar hover:bg-gray-800 text-textLight py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 border border-cardBorder">
                         <i class="fa-solid fa-book-open ${item.iconClass} text-lg"></i> Ver Cuadernillo
                     </a>
-                    <a href="https://forms.gle/5ouqFBSesJDtXNLF9" target="_blank" class="w-full ${item.btnClass} text-white py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2">
+                    <a href="https://forms.gle/ioqNjuHwnHcCQfpR8" target="_blank" class="w-full ${item.btnClass} text-white py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2">
                         <i class="fa-solid fa-pen-nib text-lg"></i> Subir Respuestas
                     </a>
                 </div>
