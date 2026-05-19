@@ -573,7 +573,7 @@ const startCounterListener = () => {
 // Agrega aquí los correos que deben tener acceso al panel de admin
 const CORREOS_ADMIN = [
     "yoimarserrano40@gmail.com",
-    "joseyoalyeira@gmail.com",
+    "pepito@gmail.com",
     "correo3@gmail.com",
     "correo4@gmail.com"
 ];
