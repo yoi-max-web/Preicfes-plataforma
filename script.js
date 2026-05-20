@@ -28,31 +28,52 @@ window.validarYDescargar = async function() {
             return;
         }
 
-        alert('Validación correcta. Ahora puedes descargar tus resultados.');
-        // TODO: aquí puedes llamar a la función que genera el PDF.
-  
-// --- INICIO INTEGRACIÓN DASHBOARD ---
-        // 1. Ocultar el modal actual (si es que usas uno) y secciones activas
-        document.querySelectorAll('.spa-section').forEach(s => s.classList.remove('active'));
+        // --- DESCARGA DEL PDF (bloque independiente y seguro) ---
+        try {
+            const detallesRef = doc(db, 'detalles_reporte', documento);
+            const detallesSnap = await getDoc(detallesRef);
+            const urlPdf = detallesSnap.exists() ? detallesSnap.data()?.urlPdf : null;
 
-        // 2. Activar la sección del dashboard
-        const dash = document.getElementById('dashboard-main');
-        dash.classList.add('active');
+            if (urlPdf && urlPdf.trim() !== '') {
+                window.open(urlPdf, '_blank');
+            } else {
+                alert('¡Hola! Tu reporte personalizado está siendo procesado por el tutor. Estará disponible muy pronto. ⏳');
+            }
+        } catch (errorPdf) {
+            console.error('Error al obtener el PDF desde detalles_reporte:', errorPdf);
+            alert('No se pudo obtener el reporte PDF. Verifica tu conexión o contacta al tutor.');
+        }
 
-        // 3. Renderizar con los datos reales de Firebase
-        renderDashboard({
-            nombre: resultadoData.nombre,
-            puesto: resultadoData.puesto,
-            puntajeTotal: resultadoData.global,
-            asignaturas: [
-                { nombre: "Matemáticas", icono: "󰪚", percentil: resultadoData.puntajes.Matematicas, colorHex: "#10b981", competencias: "Razonamiento y resolución.", datosGrafica: [40, 55, 60, resultadoData.puntajes.Matematicas] },
-                { nombre: "Lectura Crítica", icono: "󰉬", percentil: resultadoData.puntajes.Lectura, colorHex: "#3b82f6", competencias: "Interpretación de textos.", datosGrafica: [45, 50, 48, resultadoData.puntajes.Lectura] },
-                { nombre: "Sociales", icono: "󰆦", percentil: resultadoData.puntajes.Sociales, colorHex: "#f59e0b", competencias: "Pensamiento sistémico.", datosGrafica: [30, 40, 50, resultadoData.puntajes.Sociales] },
-                { nombre: "Ciencias", icono: "󰫩", percentil: resultadoData.puntajes.Ciencias, colorHex: "#ec4899", competencias: "Explicación de fenómenos.", datosGrafica: [35, 45, 55, resultadoData.puntajes.Ciencias] },
-                { nombre: "Inglés", icono: "󰗊", percentil: resultadoData.puntajes.Ingles, colorHex: "#8b5cf6", competencias: "Comprensión lingüística.", datosGrafica: [60, 65, 70, resultadoData.puntajes.Ingles] }
-            ]
-        });
-          } catch (error) {
+        // --- INICIO INTEGRACIÓN DASHBOARD (bloque independiente) ---
+        try {
+            // 1. Ocultar secciones activas
+            document.querySelectorAll('.spa-section').forEach(s => s.classList.remove('active'));
+
+            // 2. Activar la sección del dashboard
+            const dash = document.getElementById('dashboard-main');
+            if (dash) dash.classList.add('active');
+
+            // 3. Renderizar con los datos reales de Firebase (solo si existen los puntajes)
+            if (resultadoData.puntajes) {
+                renderDashboard({
+                    nombre: resultadoData.nombre,
+                    puesto: resultadoData.puesto,
+                    puntajeTotal: resultadoData.global,
+                    asignaturas: [
+                        { nombre: "Matemáticas", icono: "󰪚", percentil: resultadoData.puntajes.Matematicas, colorHex: "#10b981", competencias: "Razonamiento y resolución.", datosGrafica: [40, 55, 60, resultadoData.puntajes.Matematicas] },
+                        { nombre: "Lectura Crítica", icono: "󰉬", percentil: resultadoData.puntajes.Lectura, colorHex: "#3b82f6", competencias: "Interpretación de textos.", datosGrafica: [45, 50, 48, resultadoData.puntajes.Lectura] },
+                        { nombre: "Sociales", icono: "󰆦", percentil: resultadoData.puntajes.Sociales, colorHex: "#f59e0b", competencias: "Pensamiento sistémico.", datosGrafica: [30, 40, 50, resultadoData.puntajes.Sociales] },
+                        { nombre: "Ciencias", icono: "󰫩", percentil: resultadoData.puntajes.Ciencias, colorHex: "#ec4899", competencias: "Explicación de fenómenos.", datosGrafica: [35, 45, 55, resultadoData.puntajes.Ciencias] },
+                        { nombre: "Inglés", icono: "󰗊", percentil: resultadoData.puntajes.Ingles, colorHex: "#8b5cf6", competencias: "Comprensión lingüística.", datosGrafica: [60, 65, 70, resultadoData.puntajes.Ingles] }
+                    ]
+                });
+            }
+        } catch (errorDash) {
+            console.error('Error al renderizar el dashboard:', errorDash);
+            // El dashboard falla en silencio: no interrumpe la descarga del PDF
+        }
+
+    } catch (error) {
         console.error('Error al validar el resultado:', error);
         alert('Ocurrió un error al validar. Intenta de nuevo más tarde.');
     }

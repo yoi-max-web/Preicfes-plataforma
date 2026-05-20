@@ -3,8 +3,7 @@ import { collection, getDocs } from "https://www.gstatic.com/firebasejs/12.11.0/
 
 // Definir la clave de respuestas correctas (String de 50 caracteres)
 // IMPORTANTE: Reemplaza esta cadena con las respuestas correctas reales de tu prueba
-const CLAVE_RESPUESTAS = "ABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDAB"; 
-
+const CLAVE_RESPUESTAS = "CCABDCDCCCBBABCCBDCCADACAADCCDBCCBDADBACCDAABBC";
 /**
  * Motor de procesamiento y ranking para el Pre-ICFES Saber 11
  * @returns {Array} Un arreglo de objetos con los estudiantes ordenados por puesto.
@@ -21,7 +20,7 @@ export const generarRankingEstudiantes = async () => {
       const respuestas = data.sesion_1; // Leemos solo sesion_1, ignoramos sesion_2
 
       // Validar que la sesión 1 exista y tenga exactamente 50 caracteres
-      if (!respuestas || respuestas.length !== 50) {
+      if (!respuestas || respuestas.length !== 47) {
           console.warn(`El documento ${doc.id} no tiene una sesion_1 válida.`);
           return;
       }
