@@ -140,15 +140,22 @@ const clasesData = [
 
 const grabacionesDataLectura = [{ num: "01", titulo: "Tipologías Textuales", desc: "Niveles de lectura inicial.", url: "", desafio: "" }];
 const grabacionesDataNaturales = [{ num: "01", titulo: "Método Científico", desc: "Bases de investigación.", url: "", desafio: "" }];
-const grabacionesDataMatematicas = [{ 
+const grabacionesDataMatematicas = [
+  { 
     num: "01", 
     titulo: "Análisis de Gráficas", 
     desc: "Variables dependientes e independientes.", 
-    // Usamos la URL limpia para evitar errores de sintaxis
     url: "https://www.youtube.com/watch?v=xmpyi87fYAE", 
-   
     desafio: "DESAFÍO: Encontra un error en la clase. ¿Puedes hallarlo? deja tu cometario" 
-}];
+  },
+  { 
+    num: "02", 
+    titulo: "Clase Teórica", 
+    desc: "Resolviendo preguntitas y repasando ejercicios.", 
+    url: "https://www.awesomescreenshot.com/video/52876365?key=ede01d375bc5abae2b734d2b2f6f4f4c", 
+    desafio: "DESAFÍO: ¿Qué parte te costó más entender? ¡Déjalo en los comentarios y lo revisamos!" 
+  }
+];
 const grabacionesDataIngles = [
     { 
         num: "01", 
