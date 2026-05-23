@@ -129,7 +129,7 @@ const simulacrosData = [
 ];
 
 const simulacrosCompletosData = [
-    { titulo: "S11-X", preguntas: 50, tagClass: "bg-emerald-500/10 text-emerald-400", borderHover: "hover:border-emerald-500", btnClass: "bg-emerald-600 hover:bg-emerald-700 shadow-[0_0_15px_rgba(16,185,129,0.3)]", iconClass: "text-emerald-400", desc: "Simulacro Con Todas Las áreas", linkCuadernillo: "#", linkFormulario: "#" }
+    { titulo: "S11-X", preguntas: 47, tagClass: "bg-emerald-500/10 text-emerald-400", borderHover: "hover:border-emerald-500", btnClass: "bg-emerald-600 hover:bg-emerald-700 shadow-[0_0_15px_rgba(16,185,129,0.3)]", iconClass: "text-emerald-400", desc: "Simulacro Con Todas Las áreas", linkCuadernillo: "#", linkFormulario: "#" }
 ];
 
 const clasesData = [
