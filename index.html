@@ -137,10 +137,37 @@
                     <button id="nav-contacto" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-sidebarHover text-textMuted hover:text-white font-medium">
                         <i class="fa-solid fa-envelope w-5"></i> Contáctanos
                     </button>
+                    <button id="nav-asistencia" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-sidebarHover text-textMuted hover:text-white font-medium">
+                        <i class="fa-solid fa-clipboard-check w-5"></i> Asistencia
+                    </button>
                 </div>
                 <!-- <button id="nav-material" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-sidebarHover text-textMuted hover:text-white font-medium">
     <i class="fa-solid fa-folder-open w-5"></i> Material
 </button> -->
+<!--
+  ══════════════════════════════════════════════════════════════════════
+  SECCIÓN: Registro de Asistencia General
+  ──────────────────────────────────────────────────────────────────────
+  CÓMO INTEGRAR EN index.html:
+  1. Pega este bloque dentro del <nav> del sidebar (después del botón
+     de "Asistencia Mates" que ya tienes), como un nuevo <button>:
+
+     <button id="nav-asistencia" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-sidebarHover text-textMuted hover:text-white font-medium">
+         <i class="fa-solid fa-clipboard-check w-5"></i> Asistencia
+     </button>
+
+  2. Pega el <section> completo de abajo dentro del <main> de tu SPA,
+     junto a las otras secciones (#dashboard, #simulacro, etc.).
+
+  3. Agrega 'asistencia' al objeto sectionTitles en script.js:
+     'asistencia': 'Registro de Asistencia'
+
+  4. Pega el bloque de script.js del archivo "script-asistencia.js"
+     al final de tu script.js existente.
+  ══════════════════════════════════════════════════════════════════════
+-->
+
+
                 <div class="px-6 py-4 mt-auto border-t border-white/5">
                     <div class="flex items-center space-x-3 opacity-80 hover:opacity-100 transition-opacity">
                         <div class="relative flex h-2 w-2">
@@ -471,6 +498,8 @@
                         </form>
                     </div>
                 </section>
+            
+
                 <section id="material" class="spa-section p-4 md:p-8">
     <div class="max-w-5xl mx-auto mb-12">
         
@@ -537,7 +566,134 @@
         </div>
 
     </div>
-</section>
+
+                </section>
+                <section id="asistencia" class="spa-section px-4 md:px-8 pt-6">
+
+  <div class="max-w-lg mx-auto">
+
+    <!-- Encabezado -->
+    <div class="mb-8">
+      <div class="flex items-center gap-3 mb-2">
+        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
+          <i class="fa-solid fa-clipboard-check text-emerald-400"></i>
+        </div>
+        <div>
+          <h2 class="text-2xl font-black text-white">Asistencia</h2>
+          <p class="text-textMuted text-xs uppercase tracking-widest font-semibold">Registro de clase</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarjeta principal -->
+    <div class="bg-cardDark border border-cardBorder rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.4)]">
+
+      <!-- Banner de estado de tiempo (se controla desde JS) -->
+      <div id="asistencia-timer-banner" class="px-5 py-3 flex items-center gap-3 border-b border-cardBorder bg-emerald-950/40">
+        <div id="asistencia-timer-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></div>
+        <span id="asistencia-timer-label" class="text-emerald-400 text-sm font-semibold">
+          Calculando ventana de registro…
+        </span>
+        <span id="asistencia-timer-countdown" class="ml-auto text-emerald-300 font-mono text-sm font-bold tabular-nums">
+          —
+        </span>
+      </div>
+
+      <!-- Cuerpo del formulario -->
+      <div class="p-6 space-y-4">
+
+        <!-- Nombre de la clase -->
+        <div>
+          <label class="block text-xs text-textMuted uppercase tracking-widest font-semibold mb-1.5">
+            Clase
+          </label>
+          <div class="relative">
+            <i class="fa-solid fa-chalkboard-user absolute left-3.5 top-1/2 -translate-y-1/2 text-emerald-400/70 text-sm"></i>
+            <select id="asistencia-clase"
+              class="w-full bg-sidebar border border-cardBorder text-white rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all appearance-none">
+              <option value="">— Selecciona la clase —</option>
+              <option value="Matemáticas">Matemáticas</option>
+              <option value="Lectura Crítica">Lectura Crítica</option>
+              <option value="Inglés">Inglés</option>
+              <option value="Ciencias Naturales">Ciencias Naturales</option>
+              <option value="Sociales">Sociales y Ciudadanas</option>
+            </select>
+          </div>
+        </div>
+<div class="mb-4">
+    <label class="block text-textMuted text-sm font-bold mb-2" for="asistencia-nombre">Nombre Completo</label>
+    <input type="text" id="asistencia-nombre" class="w-full bg-sidebar border border-cardBorder text-white rounded-lg p-2.5 focus:outline-none focus:border-emerald-500" placeholder="Ej. Juan Pérez" required>
+</div>
+
+<div class="mb-4">
+    <label class="block text-textMuted text-sm font-bold mb-2" for="asistencia-grado">Grado</label>
+    <input type="text" id="asistencia-grado" class="w-full bg-sidebar border border-cardBorder text-white rounded-lg p-2.5 focus:outline-none focus:border-emerald-500" placeholder="Ej. 11-01" required>
+</div>
+        <!-- Código de sesión -->
+        <div>
+          <label class="block text-xs text-textMuted uppercase tracking-widest font-semibold mb-1.5">
+            Código de sesión
+          </label>
+          <div class="relative">
+            <i class="fa-solid fa-key absolute left-3.5 top-1/2 -translate-y-1/2 text-emerald-400/70 text-sm"></i>
+            <input id="asistencia-codigo" type="text" maxlength="4" inputmode="numeric"
+              placeholder="Código de 4 dígitos"
+              class="w-full bg-sidebar border border-cardBorder text-white rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all placeholder-textMuted tracking-[0.3em] font-mono">
+          </div>
+        </div>
+        
+
+        <!-- Botón principal -->
+        <button id="btn-asistencia-registrar"
+          onclick="registrarAsistenciaGeneral()"
+          class="w-full mt-2 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold tracking-wide py-3.5 rounded-xl transition-all duration-300 shadow-[0_0_20px_rgba(16,185,129,0.25)] hover:shadow-[0_0_30px_rgba(16,185,129,0.45)] flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none disabled:hover:bg-emerald-600">
+          <svg id="asistencia-spinner" class="hidden w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+          </svg>
+          <i id="asistencia-btn-icon" class="fa-solid fa-check-circle"></i>
+          <span id="asistencia-btn-texto">Registrar Mi Asistencia</span>
+        </button>
+
+        <!-- Mensaje de acceso denegado (oculto por defecto) -->
+        <div id="asistencia-denegado"
+          class="hidden mt-2 flex items-center gap-3 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3">
+          <i class="fa-solid fa-ban text-red-400 text-lg shrink-0"></i>
+          <div>
+            <p class="text-red-400 font-bold text-sm">Acceso denegado</p>
+            <p class="text-red-300/70 text-xs mt-0.5">La ventana de registro de 5 minutos ha cerrado.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer info -->
+      <div class="px-6 pb-5">
+        <div class="bg-sidebar/60 border border-cardBorder rounded-xl px-4 py-3 flex items-start gap-3">
+          <i class="fa-solid fa-circle-info text-textMuted text-sm mt-0.5 shrink-0"></i>
+          <p class="text-textMuted text-xs leading-relaxed">
+            Tienes <strong class="text-emerald-400">5 minutos</strong> desde que cargas la página para registrar
+            tu asistencia. Usa el código que te dio el tutor. Solo se permite un registro por sesión.
+          </p>
+        </div>
+      </div>
+
+    </div><!-- /tarjeta -->
+
+    <!-- Toast de éxito (fuera de la tarjeta, animado) -->
+    <div id="asistencia-toast"
+      class="hidden mt-4 flex items-center gap-3 bg-emerald-950/70 border border-emerald-500/40 rounded-2xl px-5 py-4 shadow-[0_0_30px_rgba(16,185,129,0.2)] animate-fade-in">
+      <div class="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+      </div>
+      <div>
+        <p class="text-white font-bold text-sm">¡Asistencia registrada!</p>
+        <p class="text-emerald-300/80 text-xs mt-0.5">Tu nota apreciativa base (+0.2) ha sido cargada. ✅</p>
+      </div>
+    </div>
+
+  </div>
+                </section>
             </div>
         </main>
     </div> 

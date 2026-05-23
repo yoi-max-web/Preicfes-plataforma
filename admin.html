@@ -201,12 +201,15 @@
                             <thead class="sticky top-0 bg-mainBg border-b border-cardBorder shadow-sm z-20">
                                 <tr>
                                     <th class="px-4 py-3 font-black text-emerald-500 tracking-wider text-xs sm:text-sm uppercase">Estudiante</th>
-                                    <th class="px-4 py-3 font-black text-emerald-500 tracking-wider text-xs sm:text-sm uppercase text-right">Hora de Ingreso</th>
+                                    <th class="px-4 py-3 font-black text-emerald-500 tracking-wider text-xs sm:text-sm uppercase">Grado</th>
+                                    <th class="px-4 py-3 font-black text-emerald-500 tracking-wider text-xs sm:text-sm uppercase">Clase</th>
+                                    <th class="px-4 py-3 font-black text-emerald-500 tracking-wider text-xs sm:text-sm uppercase">Fecha</th>
+                                    <th class="px-4 py-3 font-black text-emerald-500 tracking-wider text-xs sm:text-sm uppercase text-right">Estado</th>
                                 </tr>
                             </thead>
                             <tbody id="asistencia-tbody">
                                 <tr>
-                                    <td colspan="2" class="p-8 text-center text-gray-500">
+                                    <td colspan="5" class="p-8 text-center text-gray-500">
                                         <i class="fa-solid fa-spinner fa-spin mr-2"></i> Esperando registros...
                                     </td>
                                 </tr>
@@ -216,17 +219,15 @@
                 </section>
 
             </div>
-        </main>
-    </div>
 
-
+       
     <!-- ═══════════════════════════════════════════════
          SCRIPT PRINCIPAL — Firebase v12.11.0 (igual que script.js)
     ════════════════════════════════════════════════ -->
     <script type="module">
         import { auth, db } from "./firebase-config.js";
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-        import { collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+        import { collection, getDocs, onSnapshot, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
         // ── Correos con acceso admin ──────────────────────────────────────────
         const CORREOS_ADMIN = [
@@ -286,6 +287,8 @@
             cargarRanking();
             cargarAsistencia();
             configurarExportarCSV();
+            iniciarControlSesionListener();
+            iniciarListaAsistentesMatListener();
         }
 
         // ── A: RANKING ────────────────────────────────────────────────────────
@@ -395,120 +398,144 @@
             }
         }
 
-        // ── B: ASISTENCIA ─────────────────────────────────────────────────────
-        // Usa onSnapshot (tiempo real). Si las reglas de Firestore no lo permiten,
-        // cae automáticamente a getDocs + refresco cada 30 segundos.
+        // ── B: ASISTENCIA EN VIVO ─────────────────────────────────────────────
 
-        let asistenciaInterval = null;
-
-        function renderAsistencia(snapshot) {
-            const tbody = document.getElementById('asistencia-tbody');
-            datosAsistenciaExportar = [];
-
-            if (!snapshot || snapshot.empty) {
-                tbody.innerHTML = `<tr><td colspan="2" class="p-6 text-center text-gray-500">
-                    Ningún estudiante ha ingresado todavía.</td></tr>`;
-                return;
-            }
-
-            let registros = [];
-            snapshot.forEach(doc => {
-                const d = doc.data();
-                let fechaMostrada = "Sin registrar";
-                let ts = 0;
-                // Acepta Firestore Timestamp, Date, número (ms) o string ISO
-                if (d.horaIngreso) {
-                    let dateObj;
-                    if (d.horaIngreso.toDate) dateObj = d.horaIngreso.toDate();
-                    else if (d.horaIngreso instanceof Date) dateObj = d.horaIngreso;
-                    else dateObj = new Date(d.horaIngreso);
-                    if (!isNaN(dateObj)) {
-                        ts = dateObj.getTime();
-                        fechaMostrada = dateObj.toLocaleString('es-CO', {
-                            day: '2-digit', month: '2-digit', year: 'numeric',
-                            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
-                        });
-                    }
-                }
-                const nombre = extraerTexto(d, 'nombre','Nombre','name','estudiante') || 'Desconocido';
-                registros.push({ nombre, horaText: fechaMostrada, timestamp: ts });
-            });
-
-            registros.sort((a, b) => b.timestamp - a.timestamp);
-            tbody.innerHTML = '';
-            registros.forEach(r => {
-                datosAsistenciaExportar.push({ Nombre: r.nombre, Hora: r.horaText });
-                tbody.innerHTML += `
-                    <tr class="file-card border-b border-[#30363d]/60 hover:bg-emerald-500/5">
-                        <td class="px-4 py-3 font-semibold text-gray-200 whitespace-nowrap">
-                            <i class="fa-solid fa-user-check text-emerald-500/70 mr-2 text-sm"></i>${r.nombre}
-                        </td>
-                        <td class="px-4 py-3 text-right text-gray-400 font-mono text-xs sm:text-sm whitespace-nowrap">${r.horaText}</td>
-                    </tr>`;
-            });
+        function obtenerSemanaYAnio(fecha) {
+            const d = new Date(fecha);
+            d.setHours(0, 0, 0, 0);
+            d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+            const inicioAnio = new Date(d.getFullYear(), 0, 1);
+            const semana = Math.ceil((((d - inicioAnio) / 86400000) + 1) / 7);
+            return `Semana ${semana} - ${d.getFullYear()}`;
         }
 
         function cargarAsistencia() {
             const tbody = document.getElementById('asistencia-tbody');
-            const ref   = collection(db, 'asistencia');
+            if (!tbody) return;
 
-            // Intento 1: tiempo real con onSnapshot
-            const unsubscribe = onSnapshot(ref,
-                (snap) => {
-                    // Éxito → limpiamos el intervalo de fallback si existía
-                    if (asistenciaInterval) { clearInterval(asistenciaInterval); asistenciaInterval = null; }
-                    renderAsistencia(snap);
-                },
-                (err) => {
-                    // Falla (permiso denegado u otro error) → modo fallback con getDocs
-                    console.warn("⚠️ onSnapshot falló:", err.code, "— usando getDocs cada 30s");
-                    unsubscribe(); // cancelar listener roto
+            const q = collection(db, 'Asistencia');
 
-                    const fetchFallback = async () => {
-                        try {
-                            const snap = await getDocs(ref);
-                            renderAsistencia(snap);
-                        } catch (e) {
-                            console.error("❌ Asistencia getDocs error:", e);
-                            tbody.innerHTML = `<tr><td colspan="2" class="p-6 text-center text-red-400">
-                                <i class="fa-solid fa-triangle-exclamation mr-2"></i>
-                                Sin acceso a asistencia (${e.code || e.message})
-                                <br><span class="text-xs text-gray-500 mt-1 block">Revisa las reglas de Firestore para la colección "asistencia"</span>
-                            </td></tr>`;
-                        }
-                    };
+            onSnapshot(q, (snapshot) => {
+                const docs = snapshot.docs
+                    .map(d => ({ id: d.id, ...d.data() }))
+                    .sort((a, b) => {
+                        const ta = a.timestamp?.toMillis?.() ?? 0;
+                        const tb = b.timestamp?.toMillis?.() ?? 0;
+                        return tb - ta;
+                    });
 
-                    fetchFallback(); // primera carga inmediata
-                    asistenciaInterval = setInterval(fetchFallback, 30000); // refresco cada 30s
-                }
-            );
-        }
+                datosAsistenciaExportar = docs;
 
-        // ── C: EXPORTAR CSV ───────────────────────────────────────────────────
-        function configurarExportarCSV() {
-            document.getElementById('btn-exportar')?.addEventListener('click', () => {
-                if (datosAsistenciaExportar.length === 0) {
-                    alert("No hay registros de asistencia para exportar.");
+                if (docs.length === 0) {
+                    tbody.innerHTML = `<tr>
+                        <td colspan="5" class="p-8 text-center text-gray-500">
+                            <i class="fa-solid fa-spinner fa-spin mr-2"></i> Esperando registros...
+                        </td>
+                    </tr>`;
                     return;
                 }
 
-                let csv = "\uFEFFNombre del Estudiante,Hora de Ingreso\n";
-                datosAsistenciaExportar.forEach(row => {
-                    csv += `"${row.Nombre}","${row.Hora}"\n`;
+                const asistenciasPorSemana = {};
+                docs.forEach((item) => {
+                    const fecha = item.timestamp?.toDate?.();
+                    const etiquetaSemana = fecha ? obtenerSemanaYAnio(fecha) : 'Semana desconocida';
+                    if (!asistenciasPorSemana[etiquetaSemana]) {
+                        asistenciasPorSemana[etiquetaSemana] = [];
+                    }
+                    asistenciasPorSemana[etiquetaSemana].push(item);
                 });
 
-                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-                const url  = URL.createObjectURL(blob);
-                const link = document.createElement("a");
-                link.setAttribute("href", url);
-                link.setAttribute("download", `Reporte_Asistencia_${new Date().toISOString().split('T')[0]}.csv`);
-                link.style.display = 'none';
-                document.body.appendChild(link);
+                tbody.innerHTML = '';
+                Object.keys(asistenciasPorSemana).sort().reverse().forEach((semana) => {
+                    const filaSemana = document.createElement('tr');
+                    filaSemana.className = "bg-emerald-950/40 text-emerald-400 font-bold border-b border-cardBorder text-xs tracking-wider uppercase";
+                    filaSemana.innerHTML = `<td colspan="5" class="p-3 text-left font-black">${semana}</td>`;
+                    tbody.appendChild(filaSemana);
+
+                    asistenciasPorSemana[semana].forEach((item) => {
+                        const ts = item.timestamp?.toDate?.();
+                        const fecha = ts
+                            ? ts.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' })
+                            : '—';
+                        const hora = ts
+                            ? ts.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+                            : '—';
+
+                        tbody.innerHTML += `
+                            <tr class="border-b border-cardBorder hover:bg-emerald-500/5 transition-colors">
+                                <td class="px-4 py-3 text-white font-semibold">${item.nombreCompleto || item.nombre || 'Sin nombre'}</td>
+                                <td class="px-4 py-3 text-textMuted">${item.grado || 'N/A'}</td>
+                                <td class="px-4 py-3 text-textMuted">${item.clase || 'N/A'}</td>
+                                <td class="px-4 py-3 text-textMuted">${fecha} ${hora}</td>
+                                <td class="px-4 py-3 text-emerald-400 text-center"><i class="fa-solid fa-circle-check"></i></td>
+                            </tr>`;
+                    });
+                });
+
+            }, (err) => {
+                console.error("❌ Asistencia listener error:", err);
+                tbody.innerHTML = `<tr>
+                    <td colspan="5" class="p-6 text-center text-red-400">
+                        <i class="fa-solid fa-triangle-exclamation mr-2"></i>${err.code || err.message}
+                    </td>
+                </tr>`;
+            });
+        }
+
+        // ── C: EXPORTAR CSV ───────────────────────────────────────────────────
+
+        function configurarExportarCSV() {
+            document.getElementById('btn-exportar')?.addEventListener('click', () => {
+                if (!datosAsistenciaExportar.length) {
+                    alert('No hay registros de asistencia para exportar.');
+                    return;
+                }
+
+                const encabezado = ['Nombre', 'Email', 'Clase', 'Fecha', 'Hora'];
+                const filas = datosAsistenciaExportar.map(item => {
+                    const ts    = item.timestamp?.toDate?.();
+                    const fecha = ts ? ts.toLocaleDateString('es-CO') : '';
+                    const hora  = ts ? ts.toLocaleTimeString('es-CO') : '';
+                    return [
+                        item.nombre  || '',
+                        item.email   || '',
+                        item.clase   || '',
+                        fecha,
+                        hora
+                    ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(',');
+                });
+
+                const csv     = [encabezado.join(','), ...filas].join('\n');
+                const blob    = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                const url     = URL.createObjectURL(blob);
+                const link    = document.createElement('a');
+                link.href     = url;
+                link.download = `asistencia_${new Date().toISOString().slice(0,10)}.csv`;
                 link.click();
-                document.body.removeChild(link);
                 URL.revokeObjectURL(url);
             });
         }
+
+        // ── D: STUBS para funciones extra llamadas en iniciarDashboard ────────
+        //    (implementar según necesidad; evitan el error "not defined")
+
+        function iniciarControlSesionListener() {
+            // Listener para el panel de control de sesión (si existe en el HTML)
+            const panelSesion = document.getElementById('sesion-status');
+            if (!panelSesion) return;
+            // Escuchar cambios en config/asistencia si se necesita
+            onSnapshot(doc(db, 'config', 'asistencia'), (snap) => {
+                if (!snap.exists()) return;
+                const data = snap.data();
+                panelSesion.textContent = data?.activa ? 'Sesión activa' : 'Sesión cerrada';
+            });
+        }
+
+        function iniciarListaAsistentesMatListener() {
+            // Stub: implementar si hay una tabla/lista específica de matemáticas
+            console.log("📋 iniciarListaAsistentesMatListener: no hay elemento destino definido.");
+        }
+
     </script>
 
 </body>

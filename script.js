@@ -1,6 +1,6 @@
 import { auth, provider, db } from "./firebase-config.js";
 import { signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-import { collection, onSnapshot, doc, getDoc, setDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+import { collection, onSnapshot, doc, getDoc, setDoc, query, orderBy, addDoc, serverTimestamp, where, getDocs } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 import { generarRankingEstudiantes } from "./reportes.js";
 window.validarYDescargar = async function() {
     const documento = document.getElementById('input-id-modal')?.value.trim();
@@ -116,7 +116,8 @@ const sectionTitles = {
     'grabaciones': 'Archivo de Grabaciones',
     'ranking': 'Ranking Saber 11',
     'tutores': 'Nuestro Equipo de Tutores',
-    'contacto': 'Contacto'
+    'contacto': 'Contacto',
+    'asistencia': 'Registro de Asistencia'
 };
 
 const simulacrosData = [
@@ -358,6 +359,9 @@ function toggleSidebar() {
 }
 
 function navigate(sectionId) {
+    // Limpiar módulo de asistencia si se sale de esa sección
+    if (sectionId !== 'asistencia') limpiarAsistencia();
+
     document.querySelectorAll('.spa-section').forEach(sec => sec.classList.remove('active'));
     document.getElementById(sectionId).classList.add('active');
     document.getElementById('section-title').textContent = sectionTitles[sectionId];
@@ -379,6 +383,9 @@ function navigate(sectionId) {
             toggleSidebar();
         }
     }
+
+    // Inicializar módulo de asistencia al entrar
+    if (sectionId === 'asistencia') initAsistencia();
 }
 
 function setupFolders() {
@@ -916,4 +923,265 @@ window.volverCarpetas = function() {
 
     vistaArchivos.classList.add('hidden');
     vistaCarpetas.classList.remove('hidden');
+};
+
+
+
+// =========================================================================
+// MÓDULO DE ASISTENCIA
+// Colección Firestore: "Asistencia"
+// Documento de config del código: "config/asistencia" → { codigo: "1234" }
+// =========================================================================
+
+let asistenciaTimerInterval  = null;
+let unsubscribeAsistenciaSnap = null;
+
+const ASISTENCIA_TIMER_DURATION = 5 * 60; // 5 minutos en segundos
+const ASISTENCIA_LS_KEY         = 'saber11_asistencia_start';
+
+// ── Punto de entrada: llamado desde navigate() ───────────────────────────
+function initAsistencia() {
+    arrancarTimerAsistencia();
+}
+
+// ── Limpieza: llamado al salir de la sección ─────────────────────────────
+function limpiarAsistencia() {
+    if (asistenciaTimerInterval) {
+        clearInterval(asistenciaTimerInterval);
+        asistenciaTimerInterval = null;
+    }
+    if (unsubscribeAsistenciaSnap) {
+        unsubscribeAsistenciaSnap();
+        unsubscribeAsistenciaSnap = null;
+    }
+}
+
+// ── Temporizador de 5 minutos con persistencia en localStorage ───────────
+function arrancarTimerAsistencia() {
+    // Limpiar cualquier intervalo anterior antes de arrancar uno nuevo
+    if (asistenciaTimerInterval) clearInterval(asistenciaTimerInterval);
+
+    let startTime = parseInt(localStorage.getItem(ASISTENCIA_LS_KEY) || '0', 10);
+    const ahoraInicio = Math.floor(Date.now() / 1000);
+
+    // Reiniciar si no hay tiempo guardado o si ya venció el anterior ciclo
+    if (!startTime || (ahoraInicio - startTime) > ASISTENCIA_TIMER_DURATION) {
+        startTime = ahoraInicio;
+        localStorage.setItem(ASISTENCIA_LS_KEY, startTime.toString());
+    }
+
+    function tick() {
+        const ahora       = Math.floor(Date.now() / 1000);
+        const transcurrido = ahora - startTime;
+        const restante    = Math.max(ASISTENCIA_TIMER_DURATION - transcurrido, 0);
+
+        const mins = String(Math.floor(restante / 60)).padStart(2, '0');
+        const segs = String(restante % 60).padStart(2, '0');
+
+        const elCountdown = document.getElementById('asistencia-timer-countdown');
+        const elLabel     = document.getElementById('asistencia-timer-label');
+        const elDot       = document.getElementById('asistencia-timer-dot');
+        const elBanner    = document.getElementById('asistencia-timer-banner');
+
+        if (elCountdown) elCountdown.textContent = `${mins}:${segs}`;
+
+        if (restante <= 0) {
+            clearInterval(asistenciaTimerInterval);
+            asistenciaTimerInterval = null;
+            _bloquearBotonAsistencia();
+            return;
+        }
+
+        if (restante <= 60) {
+            // Advertencia — último minuto
+            if (elLabel)  { elLabel.textContent = '¡Último minuto para registrar!'; elLabel.className = 'text-yellow-400 text-sm font-semibold'; }
+            if (elDot)    elDot.className = 'w-2 h-2 rounded-full bg-yellow-400 animate-pulse shrink-0';
+            if (elCountdown) elCountdown.className = 'ml-auto text-yellow-300 font-mono text-sm font-bold tabular-nums';
+            if (elBanner) elBanner.className = 'px-5 py-3 flex items-center gap-3 border-b border-cardBorder bg-yellow-950/40';
+        } else {
+            // Estado normal — activo
+            if (elLabel)  { elLabel.textContent = 'Ventana de registro activa'; elLabel.className = 'text-emerald-400 text-sm font-semibold'; }
+            if (elDot)    elDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0';
+            if (elCountdown) elCountdown.className = 'ml-auto text-emerald-300 font-mono text-sm font-bold tabular-nums';
+            if (elBanner) elBanner.className = 'px-5 py-3 flex items-center gap-3 border-b border-cardBorder bg-emerald-950/40';
+        }
+    }
+
+    tick(); // ejecutar de inmediato para no esperar 1s
+    asistenciaTimerInterval = setInterval(tick, 1000);
+}
+
+// ── Bloquear UI cuando el tiempo expira ─────────────────────────────────
+function _bloquearBotonAsistencia() {
+    const elBtn      = document.getElementById('btn-asistencia-registrar');
+    const elDenegado = document.getElementById('asistencia-denegado');
+    const elLabel    = document.getElementById('asistencia-timer-label');
+    const elDot      = document.getElementById('asistencia-timer-dot');
+    const elCountdown = document.getElementById('asistencia-timer-countdown');
+    const elBanner   = document.getElementById('asistencia-timer-banner');
+
+    if (elBtn)      { elBtn.disabled = true; elBtn.onclick = null; }
+    if (elDenegado) elDenegado.classList.remove('hidden');
+    if (elLabel)    { elLabel.textContent = 'Ventana de registro cerrada'; elLabel.className = 'text-red-400 text-sm font-semibold'; }
+    if (elDot)      elDot.className = 'w-2 h-2 rounded-full bg-red-400 shrink-0';
+    if (elCountdown){ elCountdown.textContent = '00:00'; elCountdown.className = 'ml-auto text-red-300 font-mono text-sm font-bold tabular-nums'; }
+    if (elBanner)   elBanner.className = 'px-5 py-3 flex items-center gap-3 border-b border-cardBorder bg-red-950/40';
+}
+
+// ── Mostrar feedback de error en el banner (auto-reversa en 3 s) ─────────
+function _mostrarErrorAsistencia(mensaje) {
+    const elLabel  = document.getElementById('asistencia-timer-label');
+    const elBanner = document.getElementById('asistencia-timer-banner');
+    if (!elLabel || !elBanner) return;
+
+    const labelOriginal  = elLabel.textContent;
+    const classOriginal  = elLabel.className;
+    const bannerOriginal = elBanner.className;
+
+    elLabel.textContent = `⚠ ${mensaje}`;
+    elLabel.className   = 'text-red-400 text-sm font-semibold';
+    elBanner.className  = 'px-5 py-3 flex items-center gap-3 border-b border-cardBorder bg-red-950/40';
+
+    setTimeout(() => {
+        if (elLabel)  { elLabel.textContent = labelOriginal; elLabel.className = classOriginal; }
+        if (elBanner) elBanner.className = bannerOriginal;
+    }, 3000);
+}
+
+// ── Función principal de registro (llamada desde onclick en el HTML) ─────
+window.registrarAsistenciaGeneral = async function () {
+    const user = auth.currentUser;
+    if (!user) { _mostrarErrorAsistencia('No hay sesión activa. Recarga la página.'); return; }
+
+    const claseEl  = document.getElementById('asistencia-clase');
+    const codigoEl = document.getElementById('asistencia-codigo');
+    const nombreEl = document.getElementById('asistencia-nombre');
+    const gradoEl  = document.getElementById('asistencia-grado');
+    const elBtn    = document.getElementById('btn-asistencia-registrar');
+    const elSpinner = document.getElementById('asistencia-spinner');
+    const elIcon   = document.getElementById('asistencia-btn-icon');
+    const elTexto  = document.getElementById('asistencia-btn-texto');
+    const elToast  = document.getElementById('asistencia-toast');
+
+    const clase           = claseEl?.value || '';
+    const codigoIngresado = codigoEl?.value.trim() || '';
+    const nombreCompleto  = nombreEl?.value.trim() || '';
+    const grado           = gradoEl?.value.trim().toUpperCase() || '';
+
+    // Validaciones del lado cliente
+    if (!clase) {
+        _mostrarErrorAsistencia('Selecciona una clase antes de registrar.');
+        return;
+    }
+    if (!nombreCompleto || !grado) {
+        alert('Por favor, ingresa tu nombre completo y grado.');
+        return;
+    }
+    if (!codigoIngresado || codigoIngresado.length < 4) {
+        _mostrarErrorAsistencia('Ingresa el código de 4 dígitos que te dio el tutor.');
+        return;
+    }
+
+    // Mostrar estado de carga
+    if (elBtn)     elBtn.disabled = true;
+    if (elSpinner) elSpinner.classList.remove('hidden');
+    if (elIcon)    elIcon.classList.add('hidden');
+    if (elTexto)   elTexto.textContent = 'Verificando…';
+
+    const restaurarBtn = () => {
+        if (elBtn)     elBtn.disabled = false;
+        if (elSpinner) elSpinner.classList.add('hidden');
+        if (elIcon)    elIcon.classList.remove('hidden');
+        if (elTexto)   elTexto.textContent = 'Registrar Mi Asistencia';
+    };
+
+    try {
+        // ── 1. Validar código desde Firestore (con fallback si hay permission-denied) ──
+        const CODIGO_FALLBACK = '2026';
+        let codigoCorrecto = CODIGO_FALLBACK;
+
+        try {
+            const configSnap = await getDoc(doc(db, 'config', 'asistencia'));
+            if (configSnap.exists()) {
+                const codigoFirestore = configSnap.data()?.codigo?.toString().trim();
+                if (codigoFirestore) codigoCorrecto = codigoFirestore;
+            }
+        } catch (errConfig) {
+            // Las reglas de Firestore no permiten que el estudiante lea config/
+            // Se continúa con el código local (CODIGO_FALLBACK).
+            console.warn('config/asistencia no accesible, usando código local:', errConfig.code);
+        }
+
+        if (codigoCorrecto !== codigoIngresado) {
+            _mostrarErrorAsistencia('Código incorrecto. Consulta al tutor.');
+            restaurarBtn();
+            return;
+        }
+
+        // ── 2. Verificar duplicado del día ───────────────────────────────
+        const inicioDelDia = new Date();
+        inicioDelDia.setHours(0, 0, 0, 0);
+
+        try {
+            const qDuplicado = query(
+                collection(db, 'Asistencia'),
+                where('uid',   '==', user.uid),
+                where('clase', '==', clase)
+            );
+            const snapDuplicado = await getDocs(qDuplicado);
+            const yaRegistrado  = snapDuplicado.docs.some(d => {
+                const ts = d.data().timestamp?.toDate?.();
+                return ts && ts >= inicioDelDia;
+            });
+
+            if (yaRegistrado) {
+                _mostrarErrorAsistencia(`Ya registraste asistencia en ${clase} hoy.`);
+                restaurarBtn();
+                return;
+            }
+        } catch (errDup) {
+            console.warn('No se pudo verificar duplicado:', errDup.code);
+        }
+
+        // ── 3. Escribir en Firestore ─────────────────────────────────────
+        await addDoc(collection(db, 'Asistencia'), {
+            uid:            user.uid,
+            nombre:         user.displayName || 'Anónimo',
+            nombreCompleto: nombreCompleto,
+            grado:          grado,
+            email:          user.email       || '',
+            photoURL:       user.photoURL    || '',
+            clase,
+            timestamp:      serverTimestamp()
+        });
+
+        // ── Éxito ────────────────────────────────────────────────────────
+        if (elToast) {
+            elToast.classList.remove('hidden');
+            elToast.style.display = 'flex';
+            setTimeout(() => {
+                elToast.style.display = '';
+                elToast.classList.add('hidden');
+            }, 5000);
+        }
+        if (elSpinner) elSpinner.classList.add('hidden');
+        if (elIcon) {
+            elIcon.classList.remove('hidden');
+            elIcon.className = 'fa-solid fa-circle-check text-emerald-400';
+        }
+        if (elTexto) elTexto.textContent = '¡Asistencia Registrada!';
+        if (elBtn) {
+            elBtn.disabled = true;
+            elBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-500');
+            elBtn.classList.add('bg-emerald-900', 'cursor-not-allowed');
+        }
+
+    } catch (err) {
+        console.error('Error al registrar asistencia:', err);
+        const msg = err.code === 'permission-denied'
+            ? 'Sin permiso de escritura. Revisa las reglas de Firestore (ver instrucciones).'
+            : 'Error de conexión. Intenta de nuevo.';
+        _mostrarErrorAsistencia(msg);
+        restaurarBtn();
+    }
 };
