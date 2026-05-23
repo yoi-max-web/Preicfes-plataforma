@@ -114,12 +114,6 @@
             </div>
 
             <div id="navbar-actions" class="flex items-center gap-2">
-                <!-- Botón Volver: icono solo en móvil, texto en sm+ -->
-                <button id="btn-volver"
-                    class="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg border border-cardBorder hover:border-emerald-500 hover:text-emerald-400 transition-colors text-sm font-semibold">
-                    <i class="fa-solid fa-arrow-left"></i>
-                    <span class="hidden sm:inline">Volver al Inicio</span>
-                </button>
                 <!-- Botón Logout -->
                 <button id="btn-logout"
                     class="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all text-sm font-semibold">
@@ -232,7 +226,7 @@
         // ── Correos con acceso admin ──────────────────────────────────────────
         const CORREOS_ADMIN = [
             "yoimarserrano40@gmail.com",
-            "correo2@gmail.com",
+            "sigiaparicio@gmail.com",
             "correo3@gmail.com",
             "correo4@gmail.com"
         ];
@@ -440,19 +434,26 @@
                     const fecha = item.timestamp?.toDate?.();
                     const etiquetaSemana = fecha ? obtenerSemanaYAnio(fecha) : 'Semana desconocida';
                     if (!asistenciasPorSemana[etiquetaSemana]) {
-                        asistenciasPorSemana[etiquetaSemana] = [];
+                        asistenciasPorSemana[etiquetaSemana] = { registros: [], fechaMax: fecha };
                     }
-                    asistenciasPorSemana[etiquetaSemana].push(item);
+                    if (fecha && (!asistenciasPorSemana[etiquetaSemana].fechaMax || fecha > asistenciasPorSemana[etiquetaSemana].fechaMax)) {
+                        asistenciasPorSemana[etiquetaSemana].fechaMax = fecha;
+                    }
+                    asistenciasPorSemana[etiquetaSemana].registros.push(item);
                 });
 
                 tbody.innerHTML = '';
                 Object.keys(asistenciasPorSemana).sort().reverse().forEach((semana) => {
+                    const semanaData = asistenciasPorSemana[semana];
+                    const fechaLabel = semanaData.fechaMax
+                        ? semanaData.fechaMax.toLocaleDateString('es-CO', { day: '2-digit', month: 'long' })
+                        : semana;
                     const filaSemana = document.createElement('tr');
                     filaSemana.className = "bg-emerald-950/40 text-emerald-400 font-bold border-b border-cardBorder text-xs tracking-wider uppercase";
-                    filaSemana.innerHTML = `<td colspan="5" class="p-3 text-left font-black">${semana}</td>`;
+                    filaSemana.innerHTML = `<td colspan="5" class="p-3 text-left font-black">${fechaLabel}</td>`;
                     tbody.appendChild(filaSemana);
 
-                    asistenciasPorSemana[semana].forEach((item) => {
+                    semanaData.registros.forEach((item) => {
                         const ts = item.timestamp?.toDate?.();
                         const fecha = ts
                             ? ts.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' })
