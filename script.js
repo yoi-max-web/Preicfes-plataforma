@@ -166,6 +166,13 @@ const grabacionesDataIngles = [
         desc: "Estrategias de descarte y verbos clave.", 
         url: "https://www.awesomescreenshot.com/video/52361095?key=e813f9fc168a2343d2ad3dcf8b9725f9", 
         desafio: "DESAFÍO: De los ejemplos del video (como 'Enjoy this with milk'), ¿qué otra palabra clave usarías para identificar un restaurante? ¡Escríbela!" 
+    },
+    {
+        num: "03",
+        titulo: "Relaciona palabras con sus descripciones",
+        desc: "Actividad para unir vocabulario inglés con su significado.",
+        url: "https://www.awesomescreenshot.com/video/52894460?key=a6b0c4c8934c5f7420513587b0354b83",
+        desafio: "DESAFÍO: Practica asociando cada palabra con su definición en tu cuaderno."
     }
 ];
 const grabacionesDataSociales = [{ num: "01", titulo: "Constitución Política", desc: "Derechos y deberes.", url: "", desafio: "" }];
