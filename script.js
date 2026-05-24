@@ -46,12 +46,8 @@ window.validarYDescargar = async function() {
 
         // --- INICIO INTEGRACIÓN DASHBOARD (bloque independiente) ---
         try {
-            // 1. Ocultar secciones activas
-            document.querySelectorAll('.spa-section').forEach(s => s.classList.remove('active'));
-
-            // 2. Activar la sección del dashboard
-            const dash = document.getElementById('dashboard-main');
-            if (dash) dash.classList.add('active');
+            // Navegar al dashboard usando la función oficial
+            navigate('dashboard');
 
             // 3. Renderizar con los datos reales de Firebase (solo si existen los puntajes)
             if (resultadoData.puntajes) {
