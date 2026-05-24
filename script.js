@@ -733,7 +733,7 @@ const temasMateria = {
         colorSombra: 'rgba(168,85,247,0.3)',
         temas: [
             'Avisos y Lugares',
-            'Profesiones y Objetos',
+            'Relaciona palabras con sus descripciones',
             'Conversaciones Cortas',
             'Preposiciones (In, On, At)',
             'Relativos (Who, Which, That)',
