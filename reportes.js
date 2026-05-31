@@ -1,25 +1,16 @@
 import { db } from "./firebase-config.js";
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
-// Clave oficial ajustada a 47 preguntas exactas
 const CLAVE_RESPUESTAS = "CCABDCDCCCBBABCCBDCCADACAADCCDBCCBDADBACCDAABBC";
 
-// CONFIGURACIÓN DE DIFICULTAD POR PREGUNTA (47 en total para emparejar con procesador.js)
-// 1 = Fácil, 2 = Medio, 3 = Difícil.
 const PESOS_PREGUNTAS = [
-    // Matemáticas (Preguntas 1 a 10)
     1, 2, 3, 1, 2, 1, 3, 2, 1, 2,
-    // Lectura Crítica (Preguntas 11 a 20)
     2, 1, 2, 3, 1, 2, 3, 1, 2, 1,
-    // Ciencias Naturales (Preguntas 21 a 30)
     1, 3, 2, 1, 2, 3, 1, 2, 1, 2,
-    // Sociales y Ciudadanas (Preguntas 31 a 40)
     2, 2, 1, 3, 1, 2, 1, 3, 2, 1,
-    // Inglés (Preguntas 41 a 47)
     1, 2, 1, 2, 3, 1, 2
 ];
 
-// Cálculo automático del puntaje máximo acumulable por pesos para cada materia
 const MAX_PESOS = { mates: 0, lc: 0, cn: 0, cs: 0, ing: 0 };
 for (let i = 0; i < PESOS_PREGUNTAS.length; i++) {
     const peso = PESOS_PREGUNTAS[i];
@@ -30,101 +21,111 @@ for (let i = 0; i < PESOS_PREGUNTAS.length; i++) {
     else if (i < 47) MAX_PESOS.ing += peso;
 }
 
-/**
- * Motor de procesamiento y ranking para el Pre-ICFES Saber 11
- * @returns {Array} Un arreglo de objetos con los estudiantes ordenados por puesto.
- */
 export const generarRankingEstudiantes = async () => {
   try {
-    // 1. Obtener los documentos de la colección
     const querySnapshot = await getDocs(collection(db, "respuestas_brutas"));
     const estudiantes = [];
 
-    // 2. Procesar cada estudiante
     querySnapshot.forEach((doc) => {
       const data = doc.data();
-      // Leemos sesion_1 y limpiamos espacios en blanco
-      const respuestas = (data.sesion_1 || "").replace(/\s+/g, ""); 
+      const respuestas = (data.sesion_1 || "").replace(/\s+/g, "");
 
-      // Validar que la sesión 1 exista y tenga exactamente 47 caracteres
       if (!respuestas || respuestas.length !== 47) {
-          console.warn(`El documento ${doc.id} no tiene una sesion_1 válida.`);
+          console.warn(`Documento ${doc.id} sin sesion_1 válida.`);
           return;
       }
 
-      // Inicializar acumuladores de puntos por dificultad
-      let puntosMates = 0;
-      let puntosLc = 0;
-      let puntosCn = 0;
-      let puntosCs = 0;
-      let puntosIng = 0;
+      let puntosObtenidos = { mates: 0, lc: 0, cn: 0, cs: 0, ing: 0 };
+      let aciertos = { mates: 0, lc: 0, cn: 0, cs: 0, ing: 0 };
+      let pesosDificiles = 0;
 
-      // 3. Recorrer las 47 preguntas reales evaluando según el peso asignado
       for (let i = 0; i < CLAVE_RESPUESTAS.length; i++) {
-        const esCorrecta = respuestas[i].toUpperCase() === CLAVE_RESPUESTAS[i].toUpperCase();
-        
-        if (esCorrecta) {
+        if (respuestas[i].toUpperCase() === CLAVE_RESPUESTAS[i].toUpperCase()) {
           const pesoPregunta = PESOS_PREGUNTAS[i];
-
-          if (i >= 0 && i < 10) puntosMates += pesoPregunta;
-          else if (i >= 10 && i < 20) puntosLc += pesoPregunta;
-          else if (i >= 20 && i < 30) puntosCn += pesoPregunta;
-          else if (i >= 30 && i < 40) puntosCs += pesoPregunta;
-          else if (i >= 40 && i < 47) puntosIng += pesoPregunta; // Acotado rigurosamente a 47
+          if (i < 10) { puntosObtenidos.mates += pesoPregunta; aciertos.mates++; }
+          else if (i < 20) { puntosObtenidos.lc += pesoPregunta; aciertos.lc++; }
+          else if (i < 30) { puntosObtenidos.cn += pesoPregunta; aciertos.cn++; }
+          else if (i < 40) { puntosObtenidos.cs += pesoPregunta; aciertos.cs++; }
+          else if (i < 47) { puntosObtenidos.ing += pesoPregunta; aciertos.ing++; }
+          if (pesoPregunta === 3) pesosDificiles++;
         }
       }
 
-      // Escalar cada materia de 0 a 100 según los pesos acumulados
-      const puntajesEscalados = {
-        Matematicas: Math.round((puntosMates / MAX_PESOS.mates) * 100),
-        Lectura: Math.round((puntosLc / MAX_PESOS.lc) * 100),
-        Ciencias: Math.round((puntosCn / MAX_PESOS.cn) * 100),
-        Sociales: Math.round((puntosCs / MAX_PESOS.cs) * 100),
-        Ingles: Math.round((puntosIng / MAX_PESOS.ing) * 100)
+      // ✅ Decimal sin redondear — igual que procesador.js
+      const puntajes = {
+        Matematicas: parseFloat(((puntosObtenidos.mates / MAX_PESOS.mates) * 100).toFixed(2)),
+        Lectura:     parseFloat(((puntosObtenidos.lc    / MAX_PESOS.lc)    * 100).toFixed(2)),
+        Ciencias:    parseFloat(((puntosObtenidos.cn    / MAX_PESOS.cn)    * 100).toFixed(2)),
+        Sociales:    parseFloat(((puntosObtenidos.cs    / MAX_PESOS.cs)    * 100).toFixed(2)),
+        Ingles:      parseFloat(((puntosObtenidos.ing   / MAX_PESOS.ing)   * 100).toFixed(2))
       };
 
-      // Calcular el Puntaje Global Ponderado Oficial del ICFES (Pesos: 3, 3, 3, 3, 1)
       const sumaPonderada = (
-          (puntajesEscalados.Matematicas * 3) + 
-          (puntajesEscalados.Lectura * 3) + 
-          (puntajesEscalados.Ciencias * 3) + 
-          (puntajesEscalados.Sociales * 3) + 
-          (puntajesEscalados.Ingles * 1)
+          (puntajes.Matematicas * 3) +
+          (puntajes.Lectura     * 3) +
+          (puntajes.Ciencias    * 3) +
+          (puntajes.Sociales    * 3) +
+          (puntajes.Ingles      * 1)
       );
-      const global = Math.round((sumaPonderada / 13) * 5);
+      const global = parseFloat(((sumaPonderada / 13) * 5).toFixed(2));
 
-      // Añadir al arreglo temporal mapeando las variables de manera idéntica
+      const totalAciertos = aciertos.mates + aciertos.lc + aciertos.cn + aciertos.cs + aciertos.ing;
+
       estudiantes.push({
         id: doc.id,
+        ti: data.ti || "",           // ✅ guardamos el TI como campo separado
         nombre: data.nombre || "Estudiante",
         grado: data.curso || data.grado || "11",
-        puntajes: puntajesEscalados,
-        global: global
+        puntajes,
+        global,
+        totalAciertos,
+        pesosDificiles
       });
     });
 
-    if (estudiantes.length === 0) {
-        return [];
-    }
+    if (estudiantes.length === 0) return [];
 
-    // 4. Lógica de Ranking y Desempate Cruzado (Global -> Lectura -> Matemáticas -> Ciencias -> Sociales -> Inglés)
+    // ✅ Sort sincronizado con procesador.js
     estudiantes.sort((a, b) => {
-      if (b.global !== a.global) return b.global - a.global;
-      if (b.puntajes.Lectura !== a.puntajes.Lectura) return b.puntajes.Lectura - a.puntajes.Lectura;
+      if (b.global !== a.global)                             return b.global - a.global;
+      if (b.totalAciertos !== a.totalAciertos)               return b.totalAciertos - a.totalAciertos;
+      if (b.pesosDificiles !== a.pesosDificiles)             return b.pesosDificiles - a.pesosDificiles;
       if (b.puntajes.Matematicas !== a.puntajes.Matematicas) return b.puntajes.Matematicas - a.puntajes.Matematicas;
-      if (b.puntajes.Ciencias !== a.puntajes.Ciencias) return b.puntajes.Ciencias - a.puntajes.Ciencias;
-      if (b.puntajes.Sociales !== a.puntajes.Sociales) return b.puntajes.Sociales - a.puntajes.Sociales;
-      return b.puntajes.Ingles - a.puntajes.Ingles;
+      if (b.puntajes.Lectura !== a.puntajes.Lectura)         return b.puntajes.Lectura - a.puntajes.Lectura;
+      if (b.puntajes.Ciencias !== a.puntajes.Ciencias)       return b.puntajes.Ciencias - a.puntajes.Ciencias;
+      if (b.puntajes.Sociales !== a.puntajes.Sociales)       return b.puntajes.Sociales - a.puntajes.Sociales;
+      if (b.puntajes.Ingles !== a.puntajes.Ingles)           return b.puntajes.Ingles - a.puntajes.Ingles;
+      return a.nombre.localeCompare(b.nombre);
     });
 
-    // 5. Asignar el Puesto (Posición final) y retornar el arreglo listo para el frontend
     return estudiantes.map((estudiante, index) => ({
       puesto: index + 1,
       ...estudiante
     }));
 
   } catch (error) {
-    console.error("Error al procesar los datos de las respuestas:", error);
+    console.error("Error al procesar los datos:", error);
+    throw error;
+  }
+};
+
+// ✅ Busca estudiante por TI (campo) en vez de por ID del documento
+export const buscarEstudiantePorTI = async (tiIngresado) => {
+  try {
+    const q = query(
+      collection(db, "respuestas_brutas"),
+      where("ti", "==", tiIngresado.toString().trim())
+    );
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) return null;
+
+    // Si hay varios con el mismo TI, retorna el primero encontrado
+    const doc = snapshot.docs[0];
+    return { id: doc.id, ...doc.data() };
+
+  } catch (error) {
+    console.error("Error buscando por TI:", error);
     throw error;
   }
 };

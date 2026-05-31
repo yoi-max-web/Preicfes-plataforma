@@ -2,6 +2,16 @@ import { auth, provider, db } from "./firebase-config.js";
 import { signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
 import { collection, onSnapshot, doc, getDoc, setDoc, query, orderBy, addDoc, serverTimestamp, where, getDocs } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 import { generarRankingEstudiantes } from "./reportes.js";
+
+// ✅ Busca un documento en una colección por el campo 'ti' en vez de por ID
+async function buscarPorTI(coleccion, tiIngresado) {
+    const q = query(collection(db, coleccion), where('ti', '==', tiIngresado));
+    const snapshot = await getDocs(q);
+    if (snapshot.empty) return null;
+    // Si hay varios con el mismo TI, devuelve el primero
+    return snapshot.docs[0].data();
+}
+
 window.validarYDescargar = async function() {
     const documento = document.getElementById('input-id-modal')?.value.trim();
     const grado = document.getElementById('input-grado-modal')?.value.trim().toUpperCase();
@@ -12,15 +22,14 @@ window.validarYDescargar = async function() {
     }
 
     try {
-        const resultadoRef = doc(db, 'resultados_simulacro', documento);
-        const resultadoSnap = await getDoc(resultadoRef);
+        // ✅ Busca por campo 'ti' en vez de por ID del documento
+        const resultadoData = await buscarPorTI('resultados_simulacro', documento);
 
-        if (!resultadoSnap.exists()) {
+        if (!resultadoData) {
             alert('No se encontró un resultado con ese número de documento.');
             return;
         }
 
-        const resultadoData = resultadoSnap.data();
         const gradoFirestore = resultadoData?.grado?.toString().trim().toUpperCase();
 
         if (gradoFirestore !== grado) {
@@ -30,9 +39,9 @@ window.validarYDescargar = async function() {
 
         // --- DESCARGA DEL PDF (bloque independiente y seguro) ---
         try {
-            const detallesRef = doc(db, 'detalles_reporte', documento);
-            const detallesSnap = await getDoc(detallesRef);
-            const urlPdf = detallesSnap.exists() ? detallesSnap.data()?.urlPdf : null;
+            // ✅ También busca detalles_reporte por campo 'ti'
+            const detallesData = await buscarPorTI('detalles_reporte', documento);
+            const urlPdf = detallesData?.urlPdf || null;
 
             if (urlPdf && urlPdf.trim() !== '') {
                 window.open(urlPdf, '_blank');
@@ -46,10 +55,8 @@ window.validarYDescargar = async function() {
 
         // --- INICIO INTEGRACIÓN DASHBOARD (bloque independiente) ---
         try {
-            // Navegar al dashboard usando la función oficial
             navigate('dashboard');
 
-            // 3. Renderizar con los datos reales de Firebase (solo si existen los puntajes)
             if (resultadoData.puntajes) {
                 renderDashboard({
                     nombre: resultadoData.nombre,
@@ -66,7 +73,6 @@ window.validarYDescargar = async function() {
             }
         } catch (errorDash) {
             console.error('Error al renderizar el dashboard:', errorDash);
-            // El dashboard falla en silencio: no interrumpe la descarga del PDF
         }
 
     } catch (error) {
@@ -150,6 +156,13 @@ const grabacionesDataMatematicas = [
     desc: "Resolviendo preguntitas y repasando ejercicios.", 
     url: "https://www.awesomescreenshot.com/video/52876365?key=ede01d375bc5abae2b734d2b2f6f4f4c", 
     desafio: "DESAFÍO: ¿Qué parte te costó más entender? ¡Déjalo en los comentarios y lo revisamos!" 
+  },
+  {
+    num: "03",
+    titulo: "Porcentajes, Regla de tres y Cálculo mental",
+    desc: "Clase 3: aprende a calcular porcentajes, usar la regla de tres y resolver operaciones rápidas con cálculo mental.",
+    url: "https://www.awesomescreenshot.com/video/53111384?key=22292bc93f3a777758bb4de4c67d3a05",
+    desafio: "DESAFÍO: Calcula mentalmente el 15% de 260 y comparte tu resultado. Revisa si lo hiciste bien."
   }
 ];
 const grabacionesDataIngles = [
@@ -775,7 +788,7 @@ const temasMateria = {
         colorSombra: 'rgba(239,68,68,0.3)',
         temas: [
             'Análisis de Gráficas Y Proporcionalidad',
-            'Porcentajes, Regla de tres, Cálculo Mental',
+            'Porcentajes, Regla de tres y Cálculo mental',
             'Despejes Y álgebra Básica',
             'Operaciones con números Reales',
             'Áreas Y Volúmenes',
