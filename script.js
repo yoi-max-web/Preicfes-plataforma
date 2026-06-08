@@ -140,7 +140,7 @@ const clasesData = [
     { titulo: "Lectura Crítica", horario: "7:00 PM - 8:30 PM | Daniela", emoji: "📚", colorText: "text-orange-500", colorBg: "bg-orange-500/10", colorBorder: "border-orange-500/20", borderHover: "hover:border-orange-500", btnClass: "bg-orange-500 hover:bg-orange-600 shadow-[0_0_10px_rgba(249,115,22,0.3)]", link: "https://meet.google.com/dvh-txxe-snq" }
 ];
 
-const grabacionesDataLectura = [{ num: "01", titulo: "Tipologías Textuales", desc: "Niveles de lectura inicial.", url: "", desafio: "" }];
+const grabacionesDataLectura = [{ num: "01", titulo: "Resolviendo Preguntitas", desc: "Estrategias de Lectura.", url: "https://www.awesomescreenshot.com/video/53388742?key=be7edf0891791da963f51dcbffb6d66b", desafio: "Pausa el video y responde por ti mismo antes de ver la explicación" }];
 const grabacionesDataNaturales = [{ num: "01", titulo: "Método Científico", desc: "Bases de investigación.", url: "", desafio: "" }];
 const grabacionesDataMatematicas = [
   { 
