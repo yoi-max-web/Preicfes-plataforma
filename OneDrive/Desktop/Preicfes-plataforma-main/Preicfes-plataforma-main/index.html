@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <title>Pre-ICFES Saber 11 MPB</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configuración de Tailwind (tema claro, paleta verde)
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bgMain: '#f0fdf4',
+                        card: '#ffffff',
+                        line: '#bbf7d0',
+                        sidebar: '#ffffff',
+                        sidebarHover: '#d1fae5',
+                        accent: '#10b981',
+                        accentHover: '#059669',
+                        accentDark: '#047857',
+                        ink: '#052e16',
+                        muted: '#4d7c63'
+                    },
+                    fontFamily: {
+                        sans: ['Nunito', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-bgMain font-sans text-ink h-screen overflow-hidden">
+
+    <!-- ===================== PANTALLA DE ACCESO ===================== -->
+    <div id="auth-screen" class="fixed inset-0 z-[100] flex items-center justify-center bg-bgMain transition-opacity duration-500">
+        <div class="card-3d p-8 md:p-10 max-w-[400px] w-[90%] flex flex-col items-center text-center">
+
+            <img src="imgs/logo.png" alt="Logo Pre-ICFES MPB" class="w-32 h-32 mx-auto mb-6 rounded-full border-4 border-line shadow-md object-cover">
+
+            <h2 class="text-3xl font-black tracking-wider flex items-center gap-1 mb-4 text-ink">
+                SABER<span class="text-accent">11</span><span class="text-red-500 text-3xl leading-none">°</span>
+            </h2>
+
+            <p class="text-muted text-sm mb-8 leading-relaxed px-2">
+                Ingresa con tu <b class="text-ink">correo personal</b> para usar la plataforma.
+            </p>
+
+            <div class="w-full flex flex-col gap-3">
+                <button id="btn-login" class="btn-3d btn-3d--outline btn-3d--block gap-3">
+                    <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                    </svg>
+                    <span>Continuar con Google</span>
+                </button>
+            </div>
+
+            <div class="mt-8 pt-5 w-full border-t-2 border-line">
+                <p class="text-xs text-muted font-bold">
+                    I.E. Misael Pastrana Borrero
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== APLICACIÓN ===================== -->
+    <div id="app-container" class="hidden h-full w-full">
+        <div id="sidebar-overlay" class="fixed inset-0 bg-emerald-950/40 z-40 hidden md:hidden transition-opacity backdrop-blur-sm"></div>
+
+        <aside id="sidebar" class="fixed md:static inset-y-0 left-0 transform -translate-x-full md:translate-x-0 w-64 bg-sidebar flex flex-col shadow-[4px_0_24px_rgba(5,46,22,0.08)] border-r-2 border-line z-50 transition-transform duration-300 ease-in-out">
+            <div class="h-16 px-6 border-b-2 border-line flex justify-between items-center shrink-0">
+                <h1 class="text-2xl font-black tracking-wider flex items-center gap-2 text-ink">
+                    SABER<span class="text-accent">11</span><span class="text-red-500 text-3xl leading-none">°</span>
+                </h1>
+                <button id="btn-sidebar-close" class="md:hidden text-muted hover:text-ink" aria-label="Cerrar menú">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <nav class="flex-1 p-4 flex flex-col space-y-2 overflow-y-auto">
+                <div class="space-y-2">
+                    <button id="nav-inicio" class="nav-btn">
+                        <i class="fa-solid fa-house w-5"></i> Inicio
+                    </button>
+                    <button id="nav-grabaciones" class="nav-btn">
+                        <i class="fa-solid fa-circle-play w-5"></i> Clases grabadas
+                    </button>
+                    <button id="nav-material" class="nav-btn">
+                        <i class="fa-solid fa-folder-open w-5"></i> Material
+                    </button>
+                    <button id="nav-sobre-mi" class="nav-btn">
+                        <i class="fa-solid fa-user w-5"></i> Sobre mí
+                    </button>
+                </div>
+
+                <div class="px-2 py-4 mt-auto border-t-2 border-line">
+                    <div class="flex items-center space-x-3">
+                        <div class="relative flex h-2.5 w-2.5">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent/50"></span>
+                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent"></span>
+                        </div>
+                        <p class="text-muted text-xs font-bold">
+                            <span id="inscritos-count" class="text-ink text-sm font-black">...</span> estudiantes registrados
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t-2 border-line">
+                    <button id="btn-logout" class="nav-btn nav-btn--logout">
+                        <i class="fa-solid fa-arrow-right-from-bracket w-5"></i> Cerrar sesión
+                    </button>
+                </div>
+            </nav>
+
+            <div class="p-4 text-xs text-center text-muted border-t-2 border-line shrink-0">
+                Diseñado y desarrollado por Yoimar Serrano
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col min-w-0 min-h-0 bg-transparent relative h-full">
+            <header class="h-16 bg-card border-b-2 border-line flex items-center justify-between px-4 md:px-8 z-30 shrink-0">
+                <div class="flex items-center gap-4">
+                    <button id="btn-sidebar-open" class="md:hidden text-muted hover:text-accent focus:outline-none" aria-label="Abrir menú">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                    <a href="#" id="header-brand" class="flex items-center gap-3 min-w-0" aria-label="Pre-ICFES Saber 11 MPB">
+                        <img src="imgs/logo.png" alt="Logo Pre-ICFES MPB"
+                             class="w-9 h-9 rounded-full border-2 border-line object-cover shrink-0"
+                             onerror="this.style.display='none'">
+                        <span class="text-base md:text-xl font-black text-ink truncate">Pre-ICFES Saber 11 MPB</span>
+                    </a>
+                </div>
+            </header>
+
+            <div id="content-area" class="flex-1 overflow-y-auto overflow-x-hidden min-h-0">
+
+                <!-- ============ INICIO ============ -->
+                <section id="inicio" class="spa-section active p-4 md:p-8">
+                    <div class="max-w-5xl mx-auto mb-12">
+                        <div class="card-3d p-6 md:p-10">
+                            <h3 class="text-3xl md:text-5xl font-black text-ink leading-tight mb-4 max-w-3xl text-balance">
+                                Prepárate para el ICFES Saber 11
+                            </h3>
+                            <p class="text-muted text-base md:text-lg leading-relaxed max-w-2xl mb-6">
+                                Esta página es un repositorio con recursos reunidos en un solo lugar: clases grabadas y material
+                                de apoyo que puedes revisar a tu ritmo, cuando quieras.
+                            </p>
+                            <p class="text-muted text-base md:text-lg leading-relaxed max-w-2xl">
+                                <strong class="text-ink">¿Qué es el ICFES?</strong> Es la entidad estatal que estandariza y aplica las pruebas
+                                de Estado para regular el acceso y medir la calidad de la educación media en Colombia.
+                            </p>
+
+                            <!-- Temarios por área (se generan desde script.js) -->
+                            <div id="temario-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-8">
+                                <button type="button" onclick="abrirModalTemas('ingles')" class="card-3d card-3d--hover p-6 text-left" style="--c:#65a30d">
+                                    <i class="fa-solid fa-brain text-3xl mb-4" style="color:#65a30d"></i>
+                                    <h4 class="font-extrabold text-ink mb-1">Inglés</h4>
+                                    <p class="text-sm text-muted">Evalúa y potencia la competencia comunicativa en lengua extranjera, desde vocabulario esencial hasta lectura compleja.</p>
+                                </button>
+                                <button type="button" onclick="abrirModalTemas('naturales')" class="card-3d card-3d--hover p-6 text-left" style="--c:#22c55e">
+                                    <i class="fa-solid fa-seedling text-3xl mb-4" style="color:#22c55e"></i>
+                                    <h4 class="font-extrabold text-ink mb-1">Ciencias Naturales</h4>
+                                    <p class="text-sm text-muted">Integra conceptos de biología, física y química para explicar fenómenos naturales y procesos de indagación científica.</p>
+                                </button>
+                                <button type="button" onclick="abrirModalTemas('matematicas')" class="card-3d card-3d--hover p-6 text-left" style="--c:#14b8a6">
+                                    <i class="fa-solid fa-superscript text-3xl mb-4" style="color:#14b8a6"></i>
+                                    <h4 class="font-extrabold text-ink mb-1">Matemáticas</h4>
+                                    <p class="text-sm text-muted">Fortalece el razonamiento cuantitativo y la resolución de problemas aplicados a contextos reales y científicos.</p>
+                                </button>
+                                <button type="button" onclick="abrirModalTemas('lectura')" class="card-3d card-3d--hover p-6 text-left" style="--c:#10b981">
+                                    <i class="fa-solid fa-book text-3xl mb-4" style="color:#10b981"></i>
+                                    <h4 class="font-extrabold text-ink mb-1">Lectura Crítica</h4>
+                                    <p class="text-sm text-muted">Desarrolla la capacidad de analizar, interpretar y evaluar textos de diversos géneros con pensamiento crítico.</p>
+                                </button>
+                                <button type="button" onclick="abrirModalTemas('sociales')" class="card-3d card-3d--hover p-6 text-left" style="--c:#15803d">
+                                    <i class="fa-solid fa-earth-americas text-3xl mb-4" style="color:#15803d"></i>
+                                    <h4 class="font-extrabold text-ink mb-1">Sociales y Ciudadanas</h4>
+                                    <p class="text-sm text-muted">Analiza el entorno histórico, geográfico y político, fomentando la comprensión de los derechos y la ciudadanía.</p>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============ CLASES GRABADAS ============ -->
+                <section id="grabaciones" class="spa-section p-4 md:p-8">
+                    <div class="max-w-5xl mx-auto mb-12">
+                        <h3 class="text-3xl font-black text-ink mb-2">Clases grabadas</h3>
+                        <p class="text-muted mb-8 max-w-prose">
+                            Si te perdiste una tutoría en vivo, aquí encuentras todas las clases a tu disposición.
+                        </p>
+                        <!-- Las carpetas se generan desde script.js -->
+                        <div id="grabaciones-list" class="w-full space-y-5"></div>
+                    </div>
+                </section>
+
+                <!-- ============ MATERIAL ============ -->
+                <section id="material" class="spa-section p-4 md:p-8">
+                    <div class="max-w-5xl mx-auto mb-12">
+
+                        <div id="vista-carpetas" class="block animate-fade-in">
+                            <h3 class="text-3xl font-black text-ink mb-2">Material de estudio</h3>
+                            <p class="text-muted mb-8 max-w-prose">
+                                Elige un área para explorar y abrir los documentos disponibles.
+                            </p>
+                            <!-- Las carpetas se generan desde script.js -->
+                            <div id="material-carpetas" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                        </div>
+
+                        <div id="vista-subcarpetas" class="hidden animate-fade-in">
+                            <div class="flex items-center gap-4 mb-8">
+                                <button id="btn-volver-areas" class="btn-3d btn-3d--outline btn-3d--round" aria-label="Volver a las áreas">
+                                    <i class="fa-solid fa-arrow-left text-lg"></i>
+                                </button>
+                                <div>
+                                    <h3 id="titulo-subcarpetas" class="text-2xl md:text-3xl font-black text-ink">Área</h3>
+                                    <p class="text-muted text-sm">Elige una carpeta</p>
+                                </div>
+                            </div>
+                            <div id="material-subcarpetas" class="grid grid-cols-1 sm:grid-cols-2 gap-6"></div>
+                        </div>
+
+                        <div id="vista-archivos" class="hidden animate-fade-in">
+                            <div class="flex items-center gap-4 mb-8">
+                                <button id="btn-volver-subcarpetas" class="btn-3d btn-3d--outline btn-3d--round" aria-label="Volver a las carpetas del área">
+                                    <i class="fa-solid fa-arrow-left text-lg"></i>
+                                </button>
+                                <div>
+                                    <h3 id="titulo-area-material" class="text-2xl md:text-3xl font-black text-ink">Carpeta</h3>
+                                    <p id="subtitulo-material" class="text-muted text-sm">Área</p>
+                                </div>
+                            </div>
+
+                            <div id="lista-archivos-container" class="space-y-4 overflow-y-auto px-1 pt-1 pb-3 max-h-[60vh] scrollbar-material"></div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- ============ SOBRE MÍ ============ -->
+                <section id="sobre-mi" class="spa-section p-4 md:p-8">
+                    <div class="max-w-4xl mx-auto mb-12">
+                        <div class="card-3d overflow-hidden">
+                            <div class="grid grid-cols-1 md:grid-cols-5">
+
+                                <!-- Foto: reemplaza imgs/Yo.jpg por tu foto -->
+                                <div class="md:col-span-2 bg-sidebarHover p-8 flex items-center justify-center">
+                                    <div class="relative w-52 h-52 md:w-56 md:h-56">
+                                        <div class="w-full h-full rounded-full border-4 border-white shadow-lg overflow-hidden bg-white flex items-center justify-center text-accent text-7xl">
+                                            <i class="fa-solid fa-user"></i>
+                                        </div>
+                                        <img src="imgs/Yo.jpg" alt="Foto de Yoimar Serrano"
+                                             class="absolute inset-0 w-full h-full rounded-full border-4 border-white shadow-lg object-cover"
+                                             onerror="this.style.display='none'">
+                                    </div>
+                                </div>
+
+                                <div class="md:col-span-3 p-6 md:p-10">
+                                    <h3 class="text-3xl md:text-4xl font-black text-ink mb-4">Yoimar Serrano</h3>
+
+                                    <p class="text-muted leading-relaxed mb-4">
+                                        Hola, soy Yoimar Serrano. No pagué preicfes ni ningún curso: estudié por mi cuenta
+                                        con el material que tenía a mi alcance.
+                                    </p>
+                                    <p class="text-muted leading-relaxed">
+                                        Creé esta página como un repositorio donde puedes encontrar recursos para prepararte
+                                        para la prueba: clases grabadas y material de estudio, todo en un solo lugar.
+                                    </p>
+
+                                    <div class="mt-6 pt-6 border-t-2 border-line">
+                                        <p class="text-muted leading-relaxed mb-4">
+                                            Si tienes alguna duda sobre la respuesta de alguna pregunta, puedes contactarme.
+                                        </p>
+                                        <!-- Para cambiar el número: edita 57311539147 (57 = Colombia + tu celular de 10 dígitos) -->
+                                        <a id="btn-whatsapp"
+                                           href="https://wa.me/57311539147?text=Hola%20Yoimar%2C%20tengo%20una%20duda%20sobre%20la%20respuesta%20de%20una%20pregunta%20del%20ICFES."
+                                           target="_blank" rel="noopener noreferrer" class="btn-3d">
+                                            <i class="fa-brands fa-whatsapp text-xl"></i> Escríbeme por WhatsApp
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Reporte oficial del ICFES -->
+                            <div class="border-t-2 border-line p-6 md:p-8 bg-white">
+                                <p class="text-ink font-extrabold mb-3">Mi reporte oficial del ICFES</p>
+                                <a href="imgs/reporte-icfes.png" target="_blank" rel="noopener noreferrer"
+                                   class="block rounded-2xl border-2 border-line overflow-hidden hover:border-accent transition-colors">
+                                    <img src="imgs/reporte-icfes.png"
+                                         alt="Reporte general del ICFES de Yoimar Serrano"
+                                         class="w-full h-auto block">
+                                </a>
+                                <p class="text-muted text-xs mt-2">Toca cualquier imagen para verla en grande.</p>
+                            </div>
+
+                            <!-- Desglose por área -->
+                            <div class="border-t-2 border-line p-6 md:p-8 bg-white">
+                                <p class="text-ink font-extrabold mb-3">Mi resultado en cada área</p>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    <a href="imgs/desglose-lectura.png" target="_blank" rel="noopener noreferrer"
+                                       class="block rounded-2xl border-2 border-line bg-white overflow-hidden hover:border-accent transition-colors">
+                                        <img src="imgs/desglose-lectura.png" alt="Resultado del ICFES en Lectura Crítica" class="w-full h-auto block" loading="lazy">
+                                    </a>
+                                    <a href="imgs/desglose-matematicas.png" target="_blank" rel="noopener noreferrer"
+                                       class="block rounded-2xl border-2 border-line bg-white overflow-hidden hover:border-accent transition-colors">
+                                        <img src="imgs/desglose-matematicas.png" alt="Resultado del ICFES en Matemáticas" class="w-full h-auto block" loading="lazy">
+                                    </a>
+                                    <a href="imgs/desglose-sociales.png" target="_blank" rel="noopener noreferrer"
+                                       class="block rounded-2xl border-2 border-line bg-white overflow-hidden hover:border-accent transition-colors">
+                                        <img src="imgs/desglose-sociales.png" alt="Resultado del ICFES en Sociales y Ciudadanas" class="w-full h-auto block" loading="lazy">
+                                    </a>
+                                    <a href="imgs/desglose-naturales.png" target="_blank" rel="noopener noreferrer"
+                                       class="block rounded-2xl border-2 border-line bg-white overflow-hidden hover:border-accent transition-colors">
+                                        <img src="imgs/desglose-naturales.png" alt="Resultado del ICFES en Ciencias Naturales" class="w-full h-auto block" loading="lazy">
+                                    </a>
+                                    <a href="imgs/desglose-ingles.png" target="_blank" rel="noopener noreferrer"
+                                       class="block rounded-2xl border-2 border-line bg-white overflow-hidden hover:border-accent transition-colors">
+                                        <img src="imgs/desglose-ingles.png" alt="Resultado del ICFES en Inglés" class="w-full h-auto block" loading="lazy">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- ===================== MODAL DE TEMARIO ===================== -->
+    <div id="modal-temas" class="fixed inset-0 z-[110] flex items-center justify-center bg-emerald-950/40 backdrop-blur-md transition-opacity duration-300 hidden opacity-0" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+        <div id="modal-temas-content" class="card-3d p-6 md:p-8 max-w-[500px] w-[90%] relative transform scale-95 transition-transform duration-300">
+
+            <button id="btn-cerrar-temas" class="absolute top-4 right-4 text-muted hover:text-ink transition-colors" aria-label="Cerrar temario">
+                <i class="fa-solid fa-xmark text-2xl"></i>
+            </button>
+
+            <div class="flex items-center gap-4 mb-6 border-b-2 border-line pb-4">
+                <div id="modal-icon-container" class="folder-icon w-14 h-14 rounded-full flex items-center justify-center">
+                    <i id="modal-icono" class="fa-solid text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-muted text-xs font-bold">Temario de estudio</p>
+                    <h3 id="modal-titulo" class="text-2xl font-black text-ink"></h3>
+                </div>
+            </div>
+
+            <div class="max-h-[60vh] overflow-y-auto pr-2 scrollbar-material" id="modal-scroll-area">
+                <ul id="modal-lista-temas" class="space-y-3"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>

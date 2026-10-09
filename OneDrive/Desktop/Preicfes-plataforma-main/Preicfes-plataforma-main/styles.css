@@ -1,0 +1,395 @@
+/* =========================================================
+   Pre-ICFES Saber 11 · MPB
+   Tema claro permanente, paleta verde.
+   ========================================================= */
+
+:root {
+    --bg: #f0fdf4;            /* fondo general */
+    --card: #ffffff;          /* tarjetas */
+    --line: #bbf7d0;          /* bordes suaves */
+    --line-strong: #86efac;   /* bordes al hover */
+    --ink: #052e16;           /* texto principal */
+    --muted: #4d7c63;         /* texto secundario */
+    --accent: #10b981;        /* verde esmeralda */
+    --accent-dark: #047857;   /* sombra 3D de botones */
+    --accent-soft: #d1fae5;   /* fondos suaves */
+    --danger: #dc2626;
+
+    --press: 4px;             /* profundidad del botón 3D */
+    --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---------- Base ---------- */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg);
+    color: var(--ink);
+    overflow: hidden; /* el scroll vive en #content-area */
+    font-family: 'Nunito', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    background-image:
+        radial-gradient(circle at 12% 8%, rgba(16, 185, 129, 0.10), transparent 40%),
+        radial-gradient(circle at 92% 90%, rgba(132, 204, 22, 0.08), transparent 38%);
+    background-attachment: fixed;
+}
+
+:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 12px;
+}
+
+/* ---------- SPA ---------- */
+.spa-section {
+    display: none;
+    width: 100%;
+    padding-bottom: 5rem;
+}
+
+.spa-section.active {
+    display: block;
+    animation: section-in 0.35s var(--ease) both;
+}
+
+@keyframes section-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+#content-area {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+
+/* ---------- Scrollbar ---------- */
+#content-area::-webkit-scrollbar,
+nav::-webkit-scrollbar,
+.scrollbar-material::-webkit-scrollbar {
+    width: 8px;
+}
+#content-area::-webkit-scrollbar-track,
+nav::-webkit-scrollbar-track,
+.scrollbar-material::-webkit-scrollbar-track {
+    background: transparent;
+}
+#content-area::-webkit-scrollbar-thumb,
+nav::-webkit-scrollbar-thumb,
+.scrollbar-material::-webkit-scrollbar-thumb {
+    background: var(--line-strong);
+    border-radius: 10px;
+}
+#content-area::-webkit-scrollbar-thumb:hover,
+nav::-webkit-scrollbar-thumb:hover,
+.scrollbar-material::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+}
+
+/* =========================================================
+   BOTONES 3D (efecto "presionar")
+   - Base sólida con sombra inferior dura.
+   - Hover: sube un poco y se ilumina.
+   - Active: se hunde y la sombra desaparece.
+   ========================================================= */
+.btn-3d {
+    --btn-bg: var(--accent);
+    --btn-shadow: var(--accent-dark);
+    --btn-fg: #ffffff;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border: 0;
+    border-radius: 16px;
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    font-weight: 800;
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 0 var(--press) 0 var(--btn-shadow);
+    transform: translateY(0);
+    transition: transform 0.12s var(--ease),
+                box-shadow 0.12s var(--ease),
+                filter 0.2s var(--ease),
+                background-color 0.2s var(--ease);
+}
+
+.btn-3d:hover {
+    filter: brightness(1.07);
+    transform: translateY(-2px);
+    box-shadow: 0 calc(var(--press) + 2px) 0 var(--btn-shadow);
+}
+
+.btn-3d:active {
+    transform: translateY(var(--press));
+    box-shadow: 0 0 0 var(--btn-shadow);
+    filter: brightness(0.97);
+}
+
+/* Variante blanca con borde (acciones secundarias) */
+.btn-3d--outline {
+    --btn-bg: #ffffff;
+    --btn-shadow: var(--line);
+    --btn-fg: var(--accent-dark);
+    border: 2px solid var(--line);
+    padding: calc(0.75rem - 2px) calc(1.25rem - 2px);
+}
+.btn-3d--outline:hover {
+    border-color: var(--accent);
+    background: #f7fffa;
+    filter: none;
+}
+
+/* Variante circular para botones de icono */
+.btn-3d--round {
+    width: 3rem;
+    height: 3rem;
+    padding: 0;
+    border-radius: 9999px;
+    flex-shrink: 0;
+}
+
+.btn-3d--block {
+    display: flex;
+    width: 100%;
+}
+
+.btn-3d:disabled,
+.btn-3d.is-disabled {
+    --btn-bg: #e5e7eb;
+    --btn-shadow: #d1d5db;
+    --btn-fg: #9ca3af;
+    cursor: not-allowed;
+    pointer-events: none;
+    box-shadow: 0 var(--press) 0 var(--btn-shadow);
+}
+
+/* ---------- Navegación lateral ---------- */
+.nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid transparent;
+    border-radius: 14px;
+    background: transparent;
+    color: var(--muted);
+    font-weight: 800;
+    font-size: 0.95rem;
+    cursor: pointer;
+    text-align: left;
+    transition: transform 0.12s var(--ease),
+                box-shadow 0.12s var(--ease),
+                background-color 0.2s var(--ease),
+                color 0.2s var(--ease),
+                border-color 0.2s var(--ease);
+}
+
+.nav-btn:hover {
+    background: var(--accent-soft);
+    border-color: var(--line);
+    color: var(--ink);
+}
+
+.nav-btn.is-active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+    box-shadow: 0 var(--press) 0 var(--accent-dark);
+}
+
+.nav-btn.is-active:active {
+    transform: translateY(var(--press));
+    box-shadow: 0 0 0 var(--accent-dark);
+}
+
+.nav-btn--logout {
+    color: var(--danger);
+}
+.nav-btn--logout:hover {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: var(--danger);
+}
+
+/* ---------- Tarjetas ---------- */
+.card-3d {
+    background: var(--card);
+    border: 2px solid var(--line);
+    border-radius: 20px;
+    box-shadow: 0 var(--press) 0 var(--line);
+    transition: transform 0.15s var(--ease),
+                box-shadow 0.15s var(--ease),
+                border-color 0.2s var(--ease);
+}
+
+.card-3d--hover {
+    cursor: pointer;
+}
+.card-3d--hover:hover {
+    transform: translateY(-3px);
+    border-color: var(--c, var(--accent));
+    box-shadow: 0 calc(var(--press) + 3px) 0 var(--c, var(--accent));
+}
+.card-3d--hover:active {
+    transform: translateY(var(--press));
+    box-shadow: 0 0 0 var(--c, var(--accent));
+}
+
+/* ---------- Carpetas de grabaciones (details) ---------- */
+details.folder-card {
+    background: var(--card);
+    border: 2px solid var(--line);
+    border-radius: 20px;
+    box-shadow: 0 var(--press) 0 var(--line);
+    overflow: hidden;
+    transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+
+details.folder-card:hover,
+details.folder-card[open] {
+    border-color: var(--c);
+    box-shadow: 0 var(--press) 0 var(--c);
+}
+
+details.folder-card > summary {
+    list-style: none;
+    cursor: pointer;
+    transition: background-color 0.2s var(--ease);
+}
+details.folder-card > summary::-webkit-details-marker { display: none; }
+details.folder-card > summary:hover { background: color-mix(in srgb, var(--c) 8%, white); }
+details.folder-card > summary:focus { outline: none; }
+details.folder-card > summary:focus-visible { outline: 3px solid var(--c); outline-offset: -3px; }
+
+details.folder-card .ico-open  { display: none; }
+details[open].folder-card .ico-closed { display: none; }
+details[open].folder-card .ico-open   { display: inline-block; }
+
+details.folder-card .chev { transition: transform 0.3s var(--ease); }
+details[open].folder-card .chev { transform: rotate(180deg); }
+
+details[open].folder-card .folder-body {
+    animation: folder-in 0.3s var(--ease) both;
+}
+
+@keyframes folder-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.folder-icon {
+    background: color-mix(in srgb, var(--c) 14%, white);
+    border: 2px solid color-mix(in srgb, var(--c) 35%, white);
+    color: var(--c);
+}
+
+/* ---------- Tarjeta de lección ---------- */
+.lesson-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.25rem;
+    background: var(--card);
+    border: 2px solid var(--line);
+    border-radius: 18px;
+    box-shadow: 0 var(--press) 0 var(--line);
+    transition: transform 0.15s var(--ease),
+                border-color 0.2s var(--ease),
+                box-shadow 0.15s var(--ease);
+}
+.lesson-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--c);
+    box-shadow: 0 calc(var(--press) + 3px) 0 var(--c);
+}
+
+.lesson-card .btn-3d {
+    --btn-bg: var(--c);
+    --btn-shadow: color-mix(in srgb, var(--c) 62%, black);
+}
+
+.lesson-challenge {
+    background: color-mix(in srgb, var(--c) 10%, white);
+    border: 2px dashed color-mix(in srgb, var(--c) 45%, white);
+    color: var(--ink);
+    border-radius: 12px;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+/* ---------- Material: tarjeta de archivo ---------- */
+.file-card {
+    background: var(--card);
+    border: 2px solid var(--line);
+    border-radius: 16px;
+    box-shadow: 0 var(--press) 0 var(--line);
+    transition: transform 0.15s var(--ease),
+                border-color 0.2s var(--ease),
+                box-shadow 0.15s var(--ease);
+}
+.file-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+    box-shadow: 0 calc(var(--press) + 2px) 0 var(--accent);
+}
+
+.animate-fade-in {
+    animation: section-in 0.4s var(--ease) both;
+}
+
+/* ---------- Selección de texto ---------- */
+::selection {
+    background: var(--accent);
+    color: #ffffff;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+    .spa-section {
+        padding-left: 1rem;
+        padding-right: 1rem;
+        padding-top: 1.5rem;
+        padding-bottom: 6rem;
+    }
+
+    #sidebar {
+        height: 100vh;
+        height: -webkit-fill-available;
+    }
+
+    .grid {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+#sidebar-overlay { pointer-events: auto; }
+#sidebar-overlay.hidden { pointer-events: none; }
+
+/* ---------- Accesibilidad: menos movimiento ---------- */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
