@@ -178,6 +178,38 @@ nav::-webkit-scrollbar-thumb:hover,
     box-shadow: 0 var(--press) 0 var(--btn-shadow);
 }
 
+/* ---------- Botones de filtro (chips) ---------- */
+.chip {
+    --btn-fg: color-mix(in srgb, var(--c) 78%, black);
+    --btn-shadow: color-mix(in srgb, var(--c) 30%, white);
+    border-color: color-mix(in srgb, var(--c) 35%, white);
+    padding-top: calc(0.55rem - 2px);
+    padding-bottom: calc(0.55rem - 2px);
+}
+.chip:hover {
+    border-color: var(--c);
+    background: color-mix(in srgb, var(--c) 8%, white);
+}
+.chip.is-active,
+.chip.is-active:hover {
+    --btn-bg: var(--c);
+    --btn-shadow: color-mix(in srgb, var(--c) 62%, black);
+    --btn-fg: #ffffff;
+    background: var(--c);
+    border-color: var(--c);
+}
+.chip-count {
+    font-size: 0.75rem;
+    padding: 0.05rem 0.5rem;
+    border-radius: 9999px;
+    background: color-mix(in srgb, var(--c) 14%, white);
+    color: color-mix(in srgb, var(--c) 78%, black);
+}
+.chip.is-active .chip-count {
+    background: rgba(255, 255, 255, 0.28);
+    color: #ffffff;
+}
+
 /* ---------- Navegación lateral ---------- */
 .nav-btn {
     display: flex;
@@ -238,6 +270,11 @@ nav::-webkit-scrollbar-thumb:hover,
                 border-color 0.2s var(--ease);
 }
 
+.card-tinted {
+    border-color: color-mix(in srgb, var(--c, var(--accent)) 38%, white);
+    box-shadow: 0 var(--press) 0 color-mix(in srgb, var(--c, var(--accent)) 38%, white);
+}
+
 .card-3d--hover {
     cursor: pointer;
 }
@@ -251,48 +288,7 @@ nav::-webkit-scrollbar-thumb:hover,
     box-shadow: 0 0 0 var(--c, var(--accent));
 }
 
-/* ---------- Carpetas de grabaciones (details) ---------- */
-details.folder-card {
-    background: var(--card);
-    border: 2px solid var(--line);
-    border-radius: 20px;
-    box-shadow: 0 var(--press) 0 var(--line);
-    overflow: hidden;
-    transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
-}
-
-details.folder-card:hover,
-details.folder-card[open] {
-    border-color: var(--c);
-    box-shadow: 0 var(--press) 0 var(--c);
-}
-
-details.folder-card > summary {
-    list-style: none;
-    cursor: pointer;
-    transition: background-color 0.2s var(--ease);
-}
-details.folder-card > summary::-webkit-details-marker { display: none; }
-details.folder-card > summary:hover { background: color-mix(in srgb, var(--c) 8%, white); }
-details.folder-card > summary:focus { outline: none; }
-details.folder-card > summary:focus-visible { outline: 3px solid var(--c); outline-offset: -3px; }
-
-details.folder-card .ico-open  { display: none; }
-details[open].folder-card .ico-closed { display: none; }
-details[open].folder-card .ico-open   { display: inline-block; }
-
-details.folder-card .chev { transition: transform 0.3s var(--ease); }
-details[open].folder-card .chev { transform: rotate(180deg); }
-
-details[open].folder-card .folder-body {
-    animation: folder-in 0.3s var(--ease) both;
-}
-
-@keyframes folder-in {
-    from { opacity: 0; transform: translateY(-6px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-
+/* ---------- Icono de carpeta / lección ---------- */
 .folder-icon {
     background: color-mix(in srgb, var(--c) 14%, white);
     border: 2px solid color-mix(in srgb, var(--c) 35%, white);
@@ -306,9 +302,9 @@ details[open].folder-card .folder-body {
     gap: 0.75rem;
     padding: 1.25rem;
     background: var(--card);
-    border: 2px solid var(--line);
+    border: 2px solid color-mix(in srgb, var(--c, var(--accent)) 38%, white);
     border-radius: 18px;
-    box-shadow: 0 var(--press) 0 var(--line);
+    box-shadow: 0 var(--press) 0 color-mix(in srgb, var(--c, var(--accent)) 38%, white);
     transition: transform 0.15s var(--ease),
                 border-color 0.2s var(--ease),
                 box-shadow 0.15s var(--ease);
@@ -335,20 +331,47 @@ details[open].folder-card .folder-body {
     line-height: 1.4;
 }
 
+/* Clase ya vista: la tarjeta se resalta en verde */
+.lesson-card.is-visto {
+    --c: #059669 !important;   /* gana al color de la materia puesto en línea */
+    background: color-mix(in srgb, #10b981 8%, white);
+    border-color: #10b981;
+    box-shadow: 0 var(--press) 0 #10b981;
+}
+.lesson-card.is-visto:hover {
+    box-shadow: 0 calc(var(--press) + 3px) 0 #10b981;
+}
+
+.visto-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    align-self: flex-start;
+    margin: 0;
+    padding: 0.25rem 0.7rem;
+    border-radius: 9999px;
+    background: #d1fae5;
+    border: 2px solid #6ee7b7;
+    color: #047857;
+    font-size: 0.75rem;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
 /* ---------- Material: tarjeta de archivo ---------- */
 .file-card {
     background: var(--card);
-    border: 2px solid var(--line);
+    border: 2px solid color-mix(in srgb, var(--c, var(--accent)) 38%, white);
     border-radius: 16px;
-    box-shadow: 0 var(--press) 0 var(--line);
+    box-shadow: 0 var(--press) 0 color-mix(in srgb, var(--c, var(--accent)) 38%, white);
     transition: transform 0.15s var(--ease),
                 border-color 0.2s var(--ease),
                 box-shadow 0.15s var(--ease);
 }
 .file-card:hover {
     transform: translateY(-2px);
-    border-color: var(--accent);
-    box-shadow: 0 calc(var(--press) + 2px) 0 var(--accent);
+    border-color: var(--c, var(--accent));
+    box-shadow: 0 calc(var(--press) + 2px) 0 var(--c, var(--accent));
 }
 
 .animate-fade-in {

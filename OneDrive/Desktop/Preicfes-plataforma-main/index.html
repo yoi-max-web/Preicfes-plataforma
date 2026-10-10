@@ -99,6 +99,9 @@
                     <button id="nav-material" class="nav-btn">
                         <i class="fa-solid fa-folder-open w-5"></i> Material
                     </button>
+                    <button id="nav-calculadora" class="nav-btn">
+                        <i class="fa-solid fa-calculator w-5"></i> Calculadora ICFES
+                    </button>
                     <button id="nav-sobre-mi" class="nav-btn">
                         <i class="fa-solid fa-user w-5"></i> Sobre mí
                     </button>
@@ -163,28 +166,38 @@
 
                             <!-- Temarios por área (se generan desde script.js) -->
                             <div id="temario-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-8">
-                                <button type="button" onclick="abrirModalTemas('ingles')" class="card-3d card-3d--hover p-6 text-left" style="--c:#65a30d">
-                                    <i class="fa-solid fa-brain text-3xl mb-4" style="color:#65a30d"></i>
+                                <button type="button" onclick="abrirModalTemas('ingles')" class="card-3d card-tinted card-3d--hover p-6 text-left" style="--c:#7c3aed">
+                                    <div class="folder-icon w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mb-4">
+                                        <i class="fa-solid fa-brain"></i>
+                                    </div>
                                     <h4 class="font-extrabold text-ink mb-1">Inglés</h4>
                                     <p class="text-sm text-muted">Evalúa y potencia la competencia comunicativa en lengua extranjera, desde vocabulario esencial hasta lectura compleja.</p>
                                 </button>
-                                <button type="button" onclick="abrirModalTemas('naturales')" class="card-3d card-3d--hover p-6 text-left" style="--c:#22c55e">
-                                    <i class="fa-solid fa-seedling text-3xl mb-4" style="color:#22c55e"></i>
+                                <button type="button" onclick="abrirModalTemas('naturales')" class="card-3d card-tinted card-3d--hover p-6 text-left" style="--c:#15803d">
+                                    <div class="folder-icon w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mb-4">
+                                        <i class="fa-solid fa-seedling"></i>
+                                    </div>
                                     <h4 class="font-extrabold text-ink mb-1">Ciencias Naturales</h4>
                                     <p class="text-sm text-muted">Integra conceptos de biología, física y química para explicar fenómenos naturales y procesos de indagación científica.</p>
                                 </button>
-                                <button type="button" onclick="abrirModalTemas('matematicas')" class="card-3d card-3d--hover p-6 text-left" style="--c:#14b8a6">
-                                    <i class="fa-solid fa-superscript text-3xl mb-4" style="color:#14b8a6"></i>
+                                <button type="button" onclick="abrirModalTemas('matematicas')" class="card-3d card-tinted card-3d--hover p-6 text-left" style="--c:#dc2626">
+                                    <div class="folder-icon w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mb-4">
+                                        <i class="fa-solid fa-superscript"></i>
+                                    </div>
                                     <h4 class="font-extrabold text-ink mb-1">Matemáticas</h4>
                                     <p class="text-sm text-muted">Fortalece el razonamiento cuantitativo y la resolución de problemas aplicados a contextos reales y científicos.</p>
                                 </button>
-                                <button type="button" onclick="abrirModalTemas('lectura')" class="card-3d card-3d--hover p-6 text-left" style="--c:#10b981">
-                                    <i class="fa-solid fa-book text-3xl mb-4" style="color:#10b981"></i>
+                                <button type="button" onclick="abrirModalTemas('lectura')" class="card-3d card-tinted card-3d--hover p-6 text-left" style="--c:#ea580c">
+                                    <div class="folder-icon w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mb-4">
+                                        <i class="fa-solid fa-book"></i>
+                                    </div>
                                     <h4 class="font-extrabold text-ink mb-1">Lectura Crítica</h4>
                                     <p class="text-sm text-muted">Desarrolla la capacidad de analizar, interpretar y evaluar textos de diversos géneros con pensamiento crítico.</p>
                                 </button>
-                                <button type="button" onclick="abrirModalTemas('sociales')" class="card-3d card-3d--hover p-6 text-left" style="--c:#15803d">
-                                    <i class="fa-solid fa-earth-americas text-3xl mb-4" style="color:#15803d"></i>
+                                <button type="button" onclick="abrirModalTemas('sociales')" class="card-3d card-tinted card-3d--hover p-6 text-left" style="--c:#2563eb">
+                                    <div class="folder-icon w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mb-4">
+                                        <i class="fa-solid fa-earth-americas"></i>
+                                    </div>
                                     <h4 class="font-extrabold text-ink mb-1">Sociales y Ciudadanas</h4>
                                     <p class="text-sm text-muted">Analiza el entorno histórico, geográfico y político, fomentando la comprensión de los derechos y la ciudadanía.</p>
                                 </button>
@@ -200,53 +213,78 @@
                         <p class="text-muted mb-8 max-w-prose">
                             Si te perdiste una tutoría en vivo, aquí encuentras todas las clases a tu disposición.
                         </p>
-                        <!-- Las carpetas se generan desde script.js -->
-                        <div id="grabaciones-list" class="w-full space-y-5"></div>
+                        <!-- Filtros por materia (se generan desde script.js) -->
+                        <div id="grabaciones-filtros" class="flex flex-wrap gap-3 mb-8"></div>
+
+                        <!-- Las clases se generan desde script.js -->
+                        <div id="grabaciones-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-start"></div>
                     </div>
                 </section>
 
                 <!-- ============ MATERIAL ============ -->
                 <section id="material" class="spa-section p-4 md:p-8">
                     <div class="max-w-5xl mx-auto mb-12">
-
-                        <div id="vista-carpetas" class="block animate-fade-in">
-                            <h3 class="text-3xl font-black text-ink mb-2">Material de estudio</h3>
-                            <p class="text-muted mb-8 max-w-prose">
-                                Elige un área para explorar y abrir los documentos disponibles.
+                        <h3 class="text-3xl font-black text-ink mb-2">Material de estudio</h3>
+                        <p class="text-muted mb-8 max-w-prose">
+                            Compilados por materia para practicar. Toca uno para abrirlo.
+                        </p>
+                        <div role="note" class="flex items-start gap-3 mb-6 p-4 rounded-2xl bg-sidebarHover border-2 border-line">
+                            <i class="fa-solid fa-circle-info text-accent text-xl mt-0.5 shrink-0"></i>
+                            <p class="text-ink text-sm leading-relaxed">
+                                <strong>Ten en cuenta:</strong> algunos archivos pueden ser tan pesados que no se abren
+                                directamente en el navegador y toca descargarlos para verlos.
                             </p>
-                            <!-- Las carpetas se generan desde script.js -->
-                            <div id="material-carpetas" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
                         </div>
 
-                        <div id="vista-subcarpetas" class="hidden animate-fade-in">
-                            <div class="flex items-center gap-4 mb-8">
-                                <button id="btn-volver-areas" class="btn-3d btn-3d--outline btn-3d--round" aria-label="Volver a las áreas">
-                                    <i class="fa-solid fa-arrow-left text-lg"></i>
-                                </button>
-                                <div>
-                                    <h3 id="titulo-subcarpetas" class="text-2xl md:text-3xl font-black text-ink">Área</h3>
-                                    <p class="text-muted text-sm">Elige una carpeta</p>
-                                </div>
-                            </div>
-                            <div id="material-subcarpetas" class="grid grid-cols-1 sm:grid-cols-2 gap-6"></div>
+                        <!-- Número aproximado de preguntas (se llena desde script.js) -->
+                        <div id="material-stats" class="hidden items-center gap-3 mb-6 p-4 rounded-2xl bg-sidebarHover border-2 border-line">
+                            <i class="fa-solid fa-circle-question text-accent text-xl shrink-0"></i>
+                            <p class="text-ink text-sm leading-relaxed" id="material-stats-text"></p>
                         </div>
 
-                        <div id="vista-archivos" class="hidden animate-fade-in">
-                            <div class="flex items-center gap-4 mb-8">
-                                <button id="btn-volver-subcarpetas" class="btn-3d btn-3d--outline btn-3d--round" aria-label="Volver a las carpetas del área">
-                                    <i class="fa-solid fa-arrow-left text-lg"></i>
-                                </button>
-                                <div>
-                                    <h3 id="titulo-area-material" class="text-2xl md:text-3xl font-black text-ink">Carpeta</h3>
-                                    <p id="subtitulo-material" class="text-muted text-sm">Área</p>
-                                </div>
-                            </div>
-
-                            <div id="lista-archivos-container" class="space-y-4 overflow-y-auto px-1 pt-1 pb-3 max-h-[60vh] scrollbar-material"></div>
-                        </div>
-
+                        <!-- Los archivos se generan desde script.js -->
+                        <div id="material-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                     </div>
                 </section>
+
+                <!-- ============ CALCULADORA ICFES ============ -->
+                <section id="calculadora" class="spa-section p-4 md:p-8">
+                    <div class="max-w-5xl mx-auto mb-12">
+                        <h3 class="text-3xl font-black text-ink mb-2">Calculadora ICFES</h3>
+                        <p class="text-muted mb-6 max-w-prose">
+                            Elige la universidad y la carrera que quieres, dale a Calcular y te digo qué puntaje global
+                            necesitas para pasar sobrado y en qué áreas debes sacar más.
+                        </p>
+
+                        <div role="note" class="flex items-start gap-3 mb-6 p-4 rounded-2xl bg-sidebarHover border-2 border-line">
+                            <i class="fa-solid fa-circle-info text-accent text-xl mt-0.5 shrink-0"></i>
+                            <p class="text-ink text-sm leading-relaxed">
+                                <strong>Ojo:</strong> por ahora solo tengo la <strong>UIS</strong> porque es la que publica de forma oficial sus
+                                ponderaciones y puntajes de corte. Otras universidades, como la UFPS y la Universidad de Pamplona, no publican
+                                sus cortes de forma clara. Los puntajes para estas mismas carreras en otras universidades pueden servirte de
+                                referencia, pero los puntajes de corte varían según la demanda de la carrera y cambian cada semestre.</p>
+                        </div>
+
+                        <div class="card-3d p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <label class="block">
+                                <span class="block text-sm font-extrabold text-ink mb-1">1. Universidad</span>
+                                <select id="calc-uni" class="w-full rounded-xl border-2 border-line bg-white px-3 py-2 font-bold text-ink focus:outline-none focus:border-accent"></select>
+                            </label>
+                            <label class="block">
+                                <span class="block text-sm font-extrabold text-ink mb-1">2. Carrera (por facultad)</span>
+                                <select id="calc-carrera" class="w-full rounded-xl border-2 border-line bg-white px-3 py-2 font-bold text-ink focus:outline-none focus:border-accent"></select>
+                            </label>
+                            <p id="calc-aviso-uni" class="hidden md:col-span-2 text-sm font-bold text-muted"></p>
+                        </div>
+
+                        <button id="calc-btn" type="button" class="btn-3d btn-3d--block mt-4">
+                            <i class="fa-solid fa-calculator"></i> Calcular
+                        </button>
+
+                        <div id="calc-resultado" class="mt-6" aria-live="polite"></div>
+                    </div>
+                </section>
+
 
                 <!-- ============ SOBRE MÍ ============ -->
                 <section id="sobre-mi" class="spa-section p-4 md:p-8">
@@ -277,18 +315,27 @@
                                         Creé esta página como un repositorio donde puedes encontrar recursos para prepararte
                                         para la prueba: clases grabadas y material de estudio, todo en un solo lugar.
                                     </p>
+                                </div>
+                            </div>
 
-                                    <div class="mt-6 pt-6 border-t-2 border-line">
-                                        <p class="text-muted leading-relaxed mb-4">
-                                            Si tienes alguna duda sobre la respuesta de alguna pregunta, puedes contactarme.
-                                        </p>
-                                        <!-- Para cambiar el número: edita 57311539147 (57 = Colombia + tu celular de 10 dígitos) -->
-                                        <a id="btn-whatsapp"
-                                           href="https://wa.me/57311539147?text=Hola%20Yoimar%2C%20tengo%20una%20duda%20sobre%20la%20respuesta%20de%20una%20pregunta%20del%20ICFES."
-                                           target="_blank" rel="noopener noreferrer" class="btn-3d">
-                                            <i class="fa-brands fa-whatsapp text-xl"></i> Escríbeme por WhatsApp
-                                        </a>
+                            <!-- Grupo de estudio -->
+                            <div class="border-t-2 border-line p-6 md:p-8 bg-sidebarHover">
+                                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                                    <div class="flex items-start gap-3">
+                                        <i class="fa-brands fa-whatsapp text-accent text-3xl shrink-0"></i>
+                                        <div>
+                                            <p class="text-ink font-extrabold">¿Tienes dudas con alguna pregunta?</p>
+                                            <p class="text-muted text-sm leading-relaxed">
+                                                Si no sabes o dudas de la respuesta de una pregunta, puedes unirte a este grupo
+                                                de estudio y preguntar por ahí.
+                                            </p>
+                                        </div>
                                     </div>
+                                    <a href="https://chat.whatsapp.com/BjI430ENx8VKnf0PjE1fez?s=cl&amp;p=a&amp;mlu=4&amp;ilr=4"
+                                       target="_blank" rel="noopener noreferrer"
+                                       class="btn-3d shrink-0">
+                                        <i class="fa-brands fa-whatsapp"></i> Unirme al grupo
+                                    </a>
                                 </div>
                             </div>
 
