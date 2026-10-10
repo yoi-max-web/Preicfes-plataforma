@@ -1,5 +1,5 @@
 import { auth, provider, db } from "./firebase-config.js";
-import { signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+import { signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
 import { collection, onSnapshot, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
 // =========================================================================
@@ -610,6 +610,106 @@ function notasParaPonderado(w, P) {
     return notas;
 }
 
+// =========================================================================
+// SELECTOR DE CARRERA (hoja inferior con facultades desplegables)
+// Reemplaza el desplegable nativo, que en celulares no deja ver toda la lista.
+// El <select> original sigue existiendo (oculto) como fuente de verdad.
+// =========================================================================
+function crearPickerCarrera(sel) {
+    sel.classList.add('hidden');
+
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'picker-trigger';
+    trigger.innerHTML = '<span class="picker-trigger__text"></span><i class="fa-solid fa-chevron-down"></i>';
+    sel.insertAdjacentElement('afterend', trigger);
+    const triggerText = trigger.querySelector('.picker-trigger__text');
+
+    const overlay = document.createElement('div');
+    overlay.className = 'picker-overlay hidden';
+    overlay.innerHTML =
+        '<div class="picker-sheet" role="dialog" aria-modal="true" aria-label="Elige tu carrera">' +
+            '<div class="picker-head">' +
+                '<h3>Elige tu carrera</h3>' +
+                '<button type="button" class="picker-close" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>' +
+            '</div>' +
+            '<div class="picker-body"></div>' +
+        '</div>';
+    document.body.appendChild(overlay);
+    const body = overlay.querySelector('.picker-body');
+
+    function textoActual() {
+        const opt = sel.options[sel.selectedIndex];
+        return opt ? opt.textContent : 'Selecciona una carrera';
+    }
+
+    function render() {
+        triggerText.textContent = textoActual();
+        trigger.disabled = sel.disabled;
+        trigger.classList.toggle('is-disabled', sel.disabled);
+
+        body.innerHTML = '';
+        const grupos = sel.querySelectorAll('optgroup');
+        grupos.forEach((g) => {
+            const opciones = Array.from(g.querySelectorAll('option'));
+            const contieneActual = opciones.some(o => o.value === sel.value);
+
+            const grupo = document.createElement('div');
+            grupo.className = 'picker-group' + (contieneActual ? ' is-open' : '');
+
+            const cab = document.createElement('button');
+            cab.type = 'button';
+            cab.className = 'picker-group__head';
+            cab.innerHTML = '<span></span><i class="fa-solid fa-chevron-down"></i>';
+            cab.firstChild.textContent = g.label;
+            cab.addEventListener('click', () => grupo.classList.toggle('is-open'));
+
+            const lista = document.createElement('div');
+            lista.className = 'picker-group__list';
+            opciones.forEach((o) => {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'picker-option' + (o.value === sel.value ? ' is-selected' : '');
+                b.textContent = o.textContent;
+                b.addEventListener('click', () => {
+                    sel.value = o.value;
+                    sel.dispatchEvent(new Event('change', { bubbles: true }));
+                    render();
+                    cerrar();
+                });
+                lista.appendChild(b);
+            });
+
+            grupo.appendChild(cab);
+            grupo.appendChild(lista);
+            body.appendChild(grupo);
+        });
+    }
+
+    function abrir() {
+        if (sel.disabled) return;
+        overlay.classList.remove('hidden');
+        document.body.classList.add('picker-lock');
+        const sel1 = body.querySelector('.picker-option.is-selected');
+        if (sel1) setTimeout(() => sel1.scrollIntoView({ block: 'center' }), 30);
+    }
+    function cerrar() {
+        overlay.classList.add('hidden');
+        document.body.classList.remove('picker-lock');
+        trigger.focus({ preventScroll: true });
+    }
+
+    trigger.addEventListener('click', abrir);
+    overlay.querySelector('.picker-close').addEventListener('click', cerrar);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) cerrar(); });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !overlay.classList.contains('hidden')) cerrar();
+    });
+
+    render();
+    return { refresh: render };
+}
+
 function setupCalculadora() {
     const selUni = document.getElementById('calc-uni');
     const selCar = document.getElementById('calc-carrera');
@@ -620,6 +720,7 @@ function setupCalculadora() {
 
     selUni.innerHTML = UNIVERSIDADES.map((u, i) => `<option value="${i}">${u.nombre}</option>`).join('');
     const uniActual = () => UNIVERSIDADES[Number(selUni.value)];
+    const picker = crearPickerCarrera(selCar);
 
     function cargarCarreras() {
         const u = uniActual();
@@ -639,6 +740,7 @@ function setupCalculadora() {
         }
         aviso.textContent = u.nota || '';
         aviso.classList.toggle('hidden', !u.nota);
+        picker.refresh();
     }
     selUni.addEventListener('change', cargarCarreras);
     selCar.addEventListener('change', () => { salida.innerHTML = ''; });
@@ -815,19 +917,55 @@ function setupEventListeners() {
         btnLogin.setAttribute('data-original-html', btnLogin.innerHTML);
 
         btnLogin.addEventListener('click', async () => {
-            try {
-                isInitialAuthCheck = false;
-                btnLogin.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-lg"></i> <span>Verificando...</span>';
-                btnLogin.disabled = true;
+            if (btnLogin.disabled) return;
+            isInitialAuthCheck = false;
+            btnLogin.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-lg"></i> <span>Verificando...</span>';
+            btnLogin.disabled = true;
 
+            try {
                 await signInWithPopup(auth, provider);
             } catch (error) {
-                console.error("Error al iniciar sesión:", error);
+                console.error("Error al iniciar sesión:", error.code, error.message);
+
+                // Si el popup falla (bloqueado, cerrado solo, sin storage), usamos redirección
+                const usarRedirect = [
+                    'auth/popup-blocked',
+                    'auth/popup-closed-by-user',
+                    'auth/cancelled-popup-request',
+                    'auth/web-storage-unsupported',
+                    'auth/operation-not-supported-in-this-environment'
+                ].includes(error.code);
+
+                if (usarRedirect) {
+                    try {
+                        await signInWithRedirect(auth, provider);
+                        return; // la página se recarga al volver de Google
+                    } catch (e2) {
+                        console.error("Error en redirect:", e2.code, e2.message);
+                    }
+                }
+
+                if (error.code === 'auth/unauthorized-domain') {
+                    alert("Este dominio no está autorizado en Firebase.\n\nAgrega '" + location.hostname +
+                          "' en Firebase Console → Authentication → Settings → Authorized domains.");
+                } else if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
+                    alert("No se pudo iniciar sesión (" + (error.code || 'error') + "). Intenta de nuevo.");
+                }
+
                 btnLogin.innerHTML = btnLogin.getAttribute('data-original-html');
                 btnLogin.disabled = false;
             }
         });
     }
+
+    // Resultado de signInWithRedirect (cuando el popup no funcionó)
+    getRedirectResult(auth).catch((error) => {
+        console.error("Error en getRedirectResult:", error.code, error.message);
+        if (error.code === 'auth/unauthorized-domain') {
+            alert("Dominio no autorizado en Firebase: " + location.hostname);
+        }
+        resetBotonLogin();
+    });
 
     const btnLogout = document.getElementById('btn-logout');
     if (btnLogout) {
